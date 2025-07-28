@@ -10,4 +10,8 @@ router.get('/main', function(req, res, next) {
   res.render('main', { title: 'Portfolio Manager' });
 });
 
+router.get('/stock', function(req, res, next) {
+  res.render('stock', { title: 'Stock management' });
+});
+
 module.exports = router;
