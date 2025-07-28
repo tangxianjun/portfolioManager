@@ -1,0 +1,194 @@
+doctype html
+html(lang="zh-CN")
+head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title 财务投资组合管理
+    link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap", rel="stylesheet")
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    script(src="https://cdn.jsdelivr.net/npm/chart.js")
+    link(rel="stylesheet", href="/stylesheets/main.css")
+body
+    .container
+        // 侧边导航
+        .sidebar
+            .logo
+                i.fas.fa-chart-line
+                h1 财务投资组合
+            ul.nav-links
+                li.active
+                    a(href="#")
+                        i.fas.fa-home
+                        span 仪表盘
+                li
+                    a(href="#")
+                        i.fas.fa-exchange-alt
+                        span 交易记录
+        // 主内容区
+        .main-content
+            .header
+                h2 投资组合概览
+                .user-info
+                    img(src="http://localhost:3000/images/ponyma.png", alt="用户头像")
+                    span Pony Ma
+            
+            // 概览卡片
+            .overview-cards
+                .card
+                    .card-header
+                        .card-title 投资组合总值
+                        .card-icon.bg-primary
+                            i.fas.fa-dollar-sign
+                    .card-value $185,420
+                    .card-change.positive
+                        i.fas.fa-arrow-up
+                        |  2.3% ($4,210)
+                
+                .card
+                    .card-header
+                        .card-title 今日收益
+                        .card-icon.bg-success
+                            i.fas.fa-trending-up
+                    .card-value $2,845
+                    .card-change.positive
+                        i.fas.fa-arrow-up
+                        |  1.56%
+                
+                .card
+                    .card-header
+                        .card-title 年化收益
+                        .card-icon.bg-warning
+                            i.fas.fa-percentage
+                    .card-value 14.7%
+                    .card-change.negative
+                        i.fas.fa-arrow-down
+                        |  0.8% (上月)
+            
+            // 图表区域
+            .charts
+                .chart-container
+                    .chart-title 投资组合价值趋势
+                    canvas#portfolioChart
+                
+                .chart-container
+                    .chart-title 资产分配
+                    canvas#allocationChart
+            
+            // 资产列表
+            .assets-section
+                .section-header
+                    .section-title 投资资产
+                    button#addAssetBtn.btn.btn-primary
+                        i.fas.fa-plus
+                        |  添加资产
+                
+                table.table
+                    thead
+                        tr
+                            th 资产
+                            th 持有量
+                            th 当前价格
+                            th 当前价值
+                            th 成本基础
+                            th 收益
+                    tbody
+                        tr
+                            td
+                                .asset
+                                    .asset-icon.bg-primary
+                                        i.fab.fa-apple
+                                    div
+                                        .asset-name 苹果公司
+                                        .asset-symbol AAPL
+                            td 85 股
+                            td $172.35
+                            td $14,649.75
+                            td $13,200.00
+                            td.performance.positive +$1,449.75 (+11.0%)
+                        tr
+                            td
+                                .asset
+                                    .asset-icon.bg-success
+                                        i.fab.fa-google
+                                    div
+                                        .asset-name 谷歌
+                                        .asset-symbol GOOGL
+                            td 25 股
+                            td $139.21
+                            td $3,480.25
+                            td $3,200.00
+                            td.performance.positive +$280.25 (+8.8%)
+                        tr
+                            td
+                                .asset
+                                    .asset-icon.bg-warning
+                                        i.fas.fa-landmark
+                                    div
+                                        .asset-name 美国国债
+                                        .asset-symbol UST10Y
+                            td $45,000
+                            td -
+                            td $45,000.00
+                            td $45,000.00
+                            td.performance $0.00 (0.0%)
+                        tr
+                            td
+                                .asset
+                                    .asset-icon(style="background: rgba(255, 23, 68, 0.1); color: #ff1744;")
+                                        i.fab.fa-microsoft
+                                    div
+                                        .asset-name 微软
+                                        .asset-symbol MSFT
+                            td 42 股
+                            td $331.85
+                            td $13,937.70
+                            td $14,000.00
+                            td.performance.negative -$62.30 (-0.4%)
+                        tr
+                            td
+                                .asset
+                                    .asset-icon(style="background: rgba(120, 144, 156, 0.1); color: #78909c;")
+                                        i.fas.fa-coins
+                                    div
+                                        .asset-name 黄金 ETF
+                                        .asset-symbol GLD
+                            td 120 股
+                            td $183.25
+                            td $21,990.00
+                            td $21,500.00
+                            td.performance.positive +$490.00 (+2.3%)
+            
+            // 添加资产表单
+            #assetForm.form-container(style="display: none;")
+                .form-title 添加新资产
+                .form-row
+                    .form-group
+                        label(for="assetName") 资产名称
+                        input#assetName.form-control(type="text", placeholder="例如：苹果公司")
+                    .form-group
+                        label(for="assetSymbol") 资产代码
+                        input#assetSymbol.form-control(type="text", placeholder="例如：AAPL")
+                .form-row
+                    .form-group
+                        label(for="assetType") 资产类型
+                        select#assetType.form-control
+                            option(value="stock") 股票
+                            option(value="bond") 债券
+                            option(value="etf") ETF
+                            option(value="crypto") 加密货币
+                            option(value="other") 其他
+                    .form-group
+                        label(for="quantity") 持有数量
+                        input#quantity.form-control(type="number", placeholder="例如：100")
+                .form-row
+                    .form-group
+                        label(for="purchasePrice") 购买价格
+                        input#purchasePrice.form-control(type="number", placeholder="例如：150.75")
+                    .form-group
+                        label(for="currentPrice") 当前价格
+                        input#currentPrice.form-control(type="number", placeholder="例如：165.20")
+                .actions
+                    button#cancelBtn.btn.btn-outline 取消
+                    button#saveBtn.btn.btn-primary 保存资产
+
+    script(src="/js/main.js")
