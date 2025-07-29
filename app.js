@@ -39,4 +39,10 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+app.set('view engine', 'jade'); // 若用 pug 就改成 'pug'
+app.get('/', (req, res) => {
+  res.render('main'); // 不再需要额外参数
+});
+
+
 module.exports = app;

@@ -1,194 +1,805 @@
 doctype html
-html(lang="zh-CN")
-head
+html(lang="en")
+  head
     meta(charset="UTF-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title 财务投资组合管理
-    link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap", rel="stylesheet")
-    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
-    script(src="https://cdn.jsdelivr.net/npm/chart.js")
-    link(rel="stylesheet", href="/stylesheets/main.css")
-body
-    .container
-        // 侧边导航
-        .sidebar
-            .logo
-                i.fas.fa-chart-line
-                h1 财务投资组合
-            ul.nav-links
-                li.active
-                    a(href="#")
-                        i.fas.fa-home
-                        span 仪表盘
-                li
-                    a(href="#")
-                        i.fas.fa-exchange-alt
-                        span 交易记录
-        // 主内容区
-        .main-content
-            .header
-                h2 投资组合概览
-                .user-info
-                    img(src="http://localhost:3000/images/ponyma.png", alt="用户头像")
-                    span Pony Ma
-            
-            // 概览卡片
-            .overview-cards
-                .card
-                    .card-header
-                        .card-title 投资组合总值
-                        .card-icon.bg-primary
-                            i.fas.fa-dollar-sign
-                    .card-value $185,420
-                    .card-change.positive
-                        i.fas.fa-arrow-up
-                        |  2.3% ($4,210)
-                
-                .card
-                    .card-header
-                        .card-title 今日收益
-                        .card-icon.bg-success
-                            i.fas.fa-trending-up
-                    .card-value $2,845
-                    .card-change.positive
-                        i.fas.fa-arrow-up
-                        |  1.56%
-                
-                .card
-                    .card-header
-                        .card-title 年化收益
-                        .card-icon.bg-warning
-                            i.fas.fa-percentage
-                    .card-value 14.7%
-                    .card-change.negative
-                        i.fas.fa-arrow-down
-                        |  0.8% (上月)
-            
-            // 图表区域
-            .charts
-                .chart-container
-                    .chart-title 投资组合价值趋势
-                    canvas#portfolioChart
-                
-                .chart-container
-                    .chart-title 资产分配
-                    canvas#allocationChart
-            
-            // 资产列表
-            .assets-section
-                .section-header
-                    .section-title 投资资产
-                    button#addAssetBtn.btn.btn-primary
-                        i.fas.fa-plus
-                        |  添加资产
-                
-                table.table
-                    thead
-                        tr
-                            th 资产
-                            th 持有量
-                            th 当前价格
-                            th 当前价值
-                            th 成本基础
-                            th 收益
-                    tbody
-                        tr
-                            td
-                                .asset
-                                    .asset-icon.bg-primary
-                                        i.fab.fa-apple
-                                    div
-                                        .asset-name 苹果公司
-                                        .asset-symbol AAPL
-                            td 85 股
-                            td $172.35
-                            td $14,649.75
-                            td $13,200.00
-                            td.performance.positive +$1,449.75 (+11.0%)
-                        tr
-                            td
-                                .asset
-                                    .asset-icon.bg-success
-                                        i.fab.fa-google
-                                    div
-                                        .asset-name 谷歌
-                                        .asset-symbol GOOGL
-                            td 25 股
-                            td $139.21
-                            td $3,480.25
-                            td $3,200.00
-                            td.performance.positive +$280.25 (+8.8%)
-                        tr
-                            td
-                                .asset
-                                    .asset-icon.bg-warning
-                                        i.fas.fa-landmark
-                                    div
-                                        .asset-name 美国国债
-                                        .asset-symbol UST10Y
-                            td $45,000
-                            td -
-                            td $45,000.00
-                            td $45,000.00
-                            td.performance $0.00 (0.0%)
-                        tr
-                            td
-                                .asset
-                                    .asset-icon(style="background: rgba(255, 23, 68, 0.1); color: #ff1744;")
-                                        i.fab.fa-microsoft
-                                    div
-                                        .asset-name 微软
-                                        .asset-symbol MSFT
-                            td 42 股
-                            td $331.85
-                            td $13,937.70
-                            td $14,000.00
-                            td.performance.negative -$62.30 (-0.4%)
-                        tr
-                            td
-                                .asset
-                                    .asset-icon(style="background: rgba(120, 144, 156, 0.1); color: #78909c;")
-                                        i.fas.fa-coins
-                                    div
-                                        .asset-name 黄金 ETF
-                                        .asset-symbol GLD
-                            td 120 股
-                            td $183.25
-                            td $21,990.00
-                            td $21,500.00
-                            td.performance.positive +$490.00 (+2.3%)
-            
-            // 添加资产表单
-            #assetForm.form-container(style="display: none;")
-                .form-title 添加新资产
-                .form-row
-                    .form-group
-                        label(for="assetName") 资产名称
-                        input#assetName.form-control(type="text", placeholder="例如：苹果公司")
-                    .form-group
-                        label(for="assetSymbol") 资产代码
-                        input#assetSymbol.form-control(type="text", placeholder="例如：AAPL")
-                .form-row
-                    .form-group
-                        label(for="assetType") 资产类型
-                        select#assetType.form-control
-                            option(value="stock") 股票
-                            option(value="bond") 债券
-                            option(value="etf") ETF
-                            option(value="crypto") 加密货币
-                            option(value="other") 其他
-                    .form-group
-                        label(for="quantity") 持有数量
-                        input#quantity.form-control(type="number", placeholder="例如：100")
-                .form-row
-                    .form-group
-                        label(for="purchasePrice") 购买价格
-                        input#purchasePrice.form-control(type="number", placeholder="例如：150.75")
-                    .form-group
-                        label(for="currentPrice") 当前价格
-                        input#currentPrice.form-control(type="number", placeholder="例如：165.20")
-                .actions
-                    button#cancelBtn.btn.btn-outline 取消
-                    button#saveBtn.btn.btn-primary 保存资产
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Portfolio Dashboard
+    script(src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js")
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    style.
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: Arial, sans-serif; display: flex; background: #f9fafb; color: #111; }
+      
+      .sidebar {
+        width: 240px;
+        background: #fff;
+        height: 100vh;
+        padding: 20px;
+        border-right: 1px solid #e5e7eb;
+        position: fixed; /* 新增固定定位 */
+        overflow-y: auto; /* 允许侧边栏自己滚动 */
+      }
+      .sidebar h2 { font-size: 20px; margin-bottom: 20px; }
+      .sidebar nav p {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .sidebar nav p.active {
+        background: #eef2ff;
+        color: #4f46e5;
+        font-weight: bold;
+      }
 
-    script(src="/js/main.js")
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-left: 240px; /* 新增左边距 */
+      }
+
+      .header {
+        height: 60px;
+        background: #fff;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .header input {
+        width: 40%;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+
+      .stats, .charts, .holdings {
+        padding: 20px;
+      }
+
+      .card-row {
+        display: flex;
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .card {
+        background: #fff;
+        padding: 20px;
+        flex: 1;
+        border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      .card h4 { font-size: 14px; color: #555; margin-bottom: 8px; }
+      .card p { font-size: 20px; font-weight: bold; }
+      .gain { color: green; font-size: 14px; }
+      .loss { color: red; font-size: 14px; }
+
+      .charts {
+        display: flex;
+        gap: 20px;
+      }
+      .chart-box {
+        flex: 1;
+        height: 300px;
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      th, td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        font-size: 14px;
+      }
+      th { background: #f3f4f6; }
+
+      .badge {
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        color: white;
+        display: inline-block;
+      }
+      .tech { background: #3b82f6; }
+      .auto { background: #10b981; }
+      .ecom { background: #8b5cf6; }
+
+      .logo {
+        width: 20px;
+        vertical-align: middle;
+        margin-right: 8px;
+      }
+
+      .label {
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 10px;
+        color: white;
+      }
+      .buy { background: #3b82f6; }
+      .sell { background: #ef4444; }
+      .dividend { background: #f59e0b; }
+
+      .green { color: green; font-weight: bold; }
+      .red { color: red; font-weight: bold; }
+
+      .add-btn {
+        padding: 6px 12px;
+        background: #4f46e5;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .transactions-section {
+        margin-top: 40px;
+        padding: 20px;
+        background: #f3f4f6;
+        border-radius: 16px;
+      }
+
+      .transactions-section h2 {
+        margin-bottom: 20px;
+        font-size: 20px;
+        color: #111827;
+      }
+
+      .transaction-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid #e5e7eb;
+        margin-bottom: 16px;
+      }
+
+      .txn-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .txn-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #d1fae5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .txn-icon svg {
+        color: #059669;
+        width: 18px;
+        height: 18px;
+      }
+
+      .txn-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .txn-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .txn-info .ticker {
+        font-weight: bold;
+        font-size: 16px;
+      }
+
+      .txn-info .company {
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .txn-info .details {
+        font-size: 15px;
+        color: #6b7280;
+        margin-top: 4px;
+      }
+
+      .txn-right {
+        text-align: right;
+      }
+
+      .txn-type {
+        background: #000;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: bold;
+        display: inline-block;
+        margin-bottom: 10px;
+      }
+
+      .txn-amount {
+        font-weight: bold;
+        font-size: 18px;
+      }
+
+      .txn-time {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 4px;
+      }
+      .watchlist-section {
+        margin: 40px 20px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
+
+      .watchlist-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+
+      .watchlist-header h2 {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      .watchlist-actions {
+        display: flex;
+        gap: 10px;
+      }
+
+      .watchlist-btn {
+        padding: 6px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: white;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.2s ease;
+      }
+
+      .watchlist-btn:hover {
+        background: #f3f4f6;
+      }
+
+      .watchlist-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+
+      .watchlist-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .stock-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .stock-info .ticker {
+        font-weight: 600;
+        font-size: 16px;
+      }
+
+      .stock-info .company-name {
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .watchlist-right {
+        text-align: right;
+      }
+
+      .price {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .change {
+        font-size: 14px;
+        margin-top: 4px;
+      }
+
+      .green {
+        color: #10b981;
+      }
+
+      .red {
+        color: #ef4444;
+      }
+
+      .volume {
+        font-size: 13px;
+        color: #6b7280;
+        margin-top: 4px;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .notification-bell {
+        position: relative;
+        cursor: pointer;
+        color: #6b7280;
+        font-size: 18px;
+        transition: all 0.3s ease;
+      }
+      .notification-bell:hover {
+        color: #4f46e5;
+      }
+      .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ef4444;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+      .user-profile:hover {
+        background: #f3f4f6;
+      }
+      .profile-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e5e7eb;
+      }
+      .profile-name {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .user-profile i {
+        font-size: 12px;
+        color: #9ca3af;
+      }
+      .market-status {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: #6b7280;
+        padding: 6px 12px;
+        background: #f3f4f6;
+        border-radius: 20px;
+      }
+      .status-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .status-dot.green {
+        background: #10b981;
+      }
+      .status-dot.red {
+        background: #ef4444;
+      }
+
+            /* 股票Logo容器 */
+      .stock-logo-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      /* 提示框样式 */
+      .stock-tooltip {
+        position: absolute;
+        left: 50%;
+        bottom: 100%;
+        transform: translateX(-50%);
+        width: 200px;
+        padding: 12px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 100;
+      }
+
+      /* 迷你图表容器 */
+      .mini-chart {
+        height: 80px;
+        width: 100%;
+      }
+
+      /* 鼠标悬停时显示 */
+      .stock-logo-container:hover .stock-tooltip {
+        opacity: 1;
+        visibility: visible;
+        margin-bottom: 10px;
+      }
+
+      /* 提示框底部信息 */
+      .tooltip-footer {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        font-size: 12px;
+        color: #6b7280;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 8px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+      }
+  
+      .nav-link:hover {
+        background-color: rgba(239, 242, 255, 0.5);
+      }
+      
+      .nav-link.active {
+        background-color: #eef2ff;
+        font-weight: bold;
+      }
+      
+      .nav-link i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+      }
+
+
+
+  body
+    .sidebar
+      h2 📊 Portfolio
+      nav
+        a.nav-link(href="#dashboard" class=(activeLink === 'dashboard' ? 'active' : ''))
+          i.fas.fa-chart-pie(style="color: #ded824ff")
+          | Dashboard
+        a.nav-link(href="#performance" class=(activeLink === 'performance' ? 'active' : ''))
+          i.fas.fa-chart-line(style="color: #4f46e5") 
+          | Performance
+        a.nav-link(href="#asset-allocation" class=(activeLink === 'asset-allocation' ? 'active' : ''))
+          i.fas.fa-sitemap(style="color: #ec1cdaff") 
+          | Asset Allocation
+        a.nav-link(href="#holdings" class=(activeLink === 'holdings' ? 'active' : ''))
+          i.fas.fa-wallet(style="color: #25bb57ff")
+          | Holdings
+        a.nav-link(href="#transaction-history" class=(activeLink === 'transaction-history' ? 'active' : ''))
+          i.fas.fa-exchange-alt(style="color: #e87a20ff") 
+          | Transaction History
+        a.nav-link(href="#watchlist" class=(activeLink === 'watchlist' ? 'active' : ''))
+          i.fas.fa-star(style="color: #1bd5e6ff") 
+          | Watchlist
+        a.nav-link(href="#settings" class=(activeLink === 'settings' ? 'active' : ''))
+          i.fas.fa-cog(style="color: #e44242ff") 
+          | Settings
+
+    .main
+      .header
+        h3 PortfolioTracker
+        input(type="text" placeholder="Search stocks, holdings...")
+        .header-actions
+         .notification-bell
+            i.fas.fa-bell
+            .notification-badge 3
+          .user-profile
+            img.profile-avatar(src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Avatar")
+            span.profile-name JD
+            i.fas.fa-chevron-down
+          .market-status
+            span.status-dot.green
+            span Markets Open
+
+      .stats
+       #dashboard.stats
+        h2 Portfolio Dashboard
+        p(style="margin-top: 5px; color: #777;") Welcome back! Here's your portfolio overview for today.
+        .card-row
+          .card
+            h4 Total Value
+            p $124,567.89
+            .gain +2,345.67 (+1.92%)
+          .card
+            h4 Today's Change
+            p +$1,234.56
+            .gain +0.99% vs yesterday
+          .card
+            h4 Total Return
+            p +$24,567.89
+            .gain +24.56% all time
+          .card
+            h4 Cash Balance
+            p $8,432.10
+            div Available to invest
+
+      .charts
+        #performance
+        #asset-allocation
+  
+        #line-chart.chart-box
+        #pie-chart.chart-box
+
+      .holdings
+       #holdings.holdings
+        h3 Current Holdings
+        table
+          thead
+            tr
+              th Company
+              th Sector
+              th Shares
+              th Avg Cost
+              th Current Price
+              th Market Value
+              th Unrealized P&L
+          tbody
+            tr
+              td
+                img.logo(src="https://logo.clearbit.com/apple.com")
+                | Apple Inc.
+              td
+                span.badge.tech Technology
+              td 150
+              td $145.30
+              td $189.95
+              td $28,492.5
+              td.gain $6,697.5
+            tr
+              td
+                img.logo(src="https://logo.clearbit.com/google.com")
+                | Alphabet Inc.
+              td
+                span.badge.tech Technology
+              td 75
+              td $2234.50
+              td $2789.30
+              td $209,197.5
+              td.gain $41,610
+            tr
+              td
+                img.logo(src="https://logo.clearbit.com/tesla.com")
+                | Tesla Inc.
+              td
+                span.badge.auto Automotive
+              td 100
+              td $245.60
+              td $201.20
+              td $20,120
+              td.loss -$4,440
+
+      .transactions-section
+       #transaction-history.transactions-section
+        h2 Recent Transactions
+
+        .transaction-card
+          .txn-left
+            .txn-icon
+              svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7")
+            img.txn-logo(src="https://logo.clearbit.com/nvidia.com" alt="NVDA Logo")
+            .txn-info
+              .ticker NVDA
+              .company NVIDIA Corporation
+              .details 20 shares @ $875.2
+          .txn-right
+            .txn-type BUY
+            .txn-amount -$17,504
+            .txn-time 2024-07-25 09:30 AM
+
+        .transaction-card
+          .txn-left
+            .txn-icon
+              svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7")
+            img.txn-logo(src="https://logo.clearbit.com/tesla.com" alt="TSLA Logo")
+            .txn-info
+              .ticker TSLA
+              .company Tesla Inc.
+              .details 50 shares @ $245.6
+          .txn-right
+            .txn-type SELL
+            .txn-amount +$12,280
+            .txn-time 2024-07-25 10:00 AM
+
+        .transaction-card
+          .txn-left
+            .txn-icon
+              svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7")
+            img.txn-logo(src="https://logo.clearbit.com/apple.com" alt="AAPL Logo")
+            .txn-info
+              .ticker AAPL
+              .company Apple Inc.
+              .details 75 shares @ $189.95
+          .txn-right
+            .txn-type BUY
+            .txn-amount -$14,246.25
+            .txn-time 2024-07-25 11:15 AM
+
+        .transaction-card
+          .txn-left
+            .txn-icon
+              svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7")
+            img.txn-logo(src="https://logo.clearbit.com/google.com" alt="GOOGL Logo")
+            .txn-info
+              .ticker GOOGL
+              .company Alphabet Inc.
+              .details Dividend $2.50
+          .txn-right
+            .txn-type DIVIDEND
+            .txn-amount +$187.50
+            .txn-time 2024-07-25 12:45 PM
+
+      .watchlist-section
+       #watchlist.watchlist-section
+        .watchlist-header
+          h2 Market Watchlist
+          .watchlist-actions
+            button.watchlist-btn ＋ Add Stock
+            button.watchlist-btn － Delete Stock
+
+        .watchlist-card
+          .watchlist-left
+            .stock-logo-container
+              img.stock-logo(src="https://logo.clearbit.com/microsoft.com" alt="MSFT Logo")
+              .stock-tooltip  <!-- 悬浮提示框 -->
+                #msft-mini-chart.mini-chart  <!-- 迷你图表容器 -->
+                .tooltip-footer 
+                  span Last 7 days
+                  span.green +2.4%
+            
+            .stock-info
+              .ticker MSFT
+              .company-name Microsoft Corporation
+
+          .watchlist-right
+            .price $415.75
+            .change.green ↗ +$8.25 (+2.02%)
+            .volume Vol: 28.5M
+
+        .watchlist-card
+          .watchlist-left
+            img.stock-logo(src="https://logo.clearbit.com/apple.com" alt="AAPL Logo")
+            .stock-info
+              .ticker AAPL
+              .company-name Apple Inc.
+          .watchlist-right
+            .price $189.23
+            .change.green ↗ +$3.14 (+1.69%)
+            .volume Vol: 52.3M
+
+        .watchlist-card
+          .watchlist-left
+            img.stock-logo(src="https://logo.clearbit.com/google.com" alt="GOOGL Logo")
+            .stock-info
+              .ticker GOOGL
+              .company-name Alphabet Inc.
+          .watchlist-right
+            .price $2789.30
+            .change.green ↗ +$45.12 (+1.65%)
+            .volume Vol: 18.7M
+
+        .watchlist-card
+          .watchlist-left
+            img.stock-logo(src="https://logo.clearbit.com/tesla.com" alt="TSLA Logo")
+            .stock-info
+              .ticker TSLA
+              .company-name Tesla Inc.
+          .watchlist-right
+            .price $201.20
+            .change.red ↘ −$4.40 (−2.14%)
+            .volume Vol: 67.9M
+
+        .watchlist-card
+          .watchlist-left
+            img.stock-logo(src="https://logo.clearbit.com/amazon.com" alt="AMZN Logo")
+            .stock-info
+              .ticker AMZN
+              .company-name Amazon.com Inc.
+          .watchlist-right
+            .price $132.55
+            .change.red ↘ −$1.85 (−1.37%)
+            .volume Vol: 39.2M
+
+ script.
+  // 主图表初始化
+  const pieChart = echarts.init(document.getElementById('pie-chart'));
+  pieChart.setOption({
+    title: { text: 'Asset Allocation', left: 'center' },
+    tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
+    legend: { bottom: 0 },
+    series: [{
+      type: 'pie',
+      radius: '50%',
+      data: [
+        { value: 45.2, name: 'Technology' },
+        { value: 18.7, name: 'Healthcare' },
+        { value: 15.3, name: 'Financial' },
+        { value: 12.1, name: 'Consumer Goods' },
+        { value: 8.7, name: 'Energy' }
+      ]
+    }]
+  });
+
+  const lineChart = echarts.init(document.getElementById('line-chart'));
+  lineChart.setOption({
+    title: { text: 'Portfolio Performance' },
+    tooltip: { trigger: 'axis' },
+    xAxis: { type: 'category', data: ['Feb', 'Apr', 'Jun', 'Aug', 'Oct', 'Dec'] },
+    yAxis: { type: 'value' },
+    series: [{ data: [30000, 50000, 70000, 90000, 110000, 130000], type: 'line' }]
+  });
+
+  // 使用ECharts创建迷你折线图
+  function initMiniCharts() {
+    // MSFT示例数据
+    const msftChart = echarts.init(document.getElementById('msft-mini-chart'));
+    msftChart.setOption({
+      grid: { top: 5, right: 5, bottom: 5, left: 5 },
+      xAxis: { type: 'category', show: false, data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
+      yAxis: { type: 'value', show: false },
+      series: [{
+        type: 'line',
+        smooth: true,
+        data: [310, 408, 500, 415, 650],
+        lineStyle: { color: '#10b981', width: 2 },
+        areaStyle: { color: 'rgba(16, 185, 129, 0.1)' }
+      }]
+    });
+    // 其他股票图表同理...
+  }
+  
+  // 页面加载后初始化
+  window.addEventListener('load', initMiniCharts);
