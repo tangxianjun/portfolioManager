@@ -1041,7 +1041,7 @@ html(lang="en")
         const requestBody = {
           share: quantity,
           code: selectedItem.symbol,
-          type: 1 // 1表示购买
+          type: 0 // 0表示购买
         };
 
         // 显示加载状态
@@ -1126,7 +1126,7 @@ html(lang="en")
         const requestBody = {
           share: quantity,
           code: selectedItem.symbol,
-          type: 0 // 0表示卖出
+          type: 1 // 1表示卖出
         };
 
         // 显示加载状态
