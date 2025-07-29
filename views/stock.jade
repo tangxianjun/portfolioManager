@@ -1037,19 +1037,53 @@ html(lang="en")
           return;
         }
 
-        // 更新用户持仓
-        const currentHolding = userHoldings[selectedItem.symbol] || 0;
-        userHoldings[selectedItem.symbol] = currentHolding + quantity;
+        // 构造请求体
+        const requestBody = {
+          share: quantity,
+          code: selectedItem.symbol,
+          type: 1 // 1表示购买
+        };
 
-        // 显示成功消息
-        showNotification(`Successfully purchased ${quantity} ${selectedItem.symbol}!`);
+        // 显示加载状态
+        showNotification(`Processing purchase of ${quantity} ${selectedItem.symbol}...`);
 
-        // 更新UI (持仓信息和总资产)
-        updateHoldingInfo();
-        calculateGrossAssets();
-
-        // 关闭模态框
-        closeBuyModalFunc();
+        // 发送POST请求到后端
+        fetch('http://localhost:3000/transaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to process purchase');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.message === 'success') {
+            // 更新用户持仓
+            const currentHolding = userHoldings[selectedItem.symbol] || 0;
+            userHoldings[selectedItem.symbol] = currentHolding + quantity;
+            
+            // 显示成功消息
+            showNotification(`Successfully purchased ${quantity} ${selectedItem.symbol}!`);
+            
+            // 更新UI (持仓信息和总资产)
+            updateHoldingInfo();
+            calculateGrossAssets();
+            
+            // 关闭模态框
+            closeBuyModalFunc();
+          } else {
+            showNotification(`Purchase failed: ${data.message}`, 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showNotification(`Purchase failed: ${error.message}`, 'error');
+        });
       }
 
       // ========== 卖出功能 ==========
@@ -1082,21 +1116,56 @@ html(lang="en")
           return;
         }
 
+        // 新增持仓量检测
         if (quantity > holding) {
-          showNotification(`You cannot sell more than you hold (${holding} ${selectedItem.symbol}).`, 'error');
+          showNotification(`You cannot sell more than your current holding (${holding} ${selectedItem.symbol}).`, 'error');
           return;
         }
 
-        // 更新用户持仓
-        userHoldings[selectedItem.symbol] = holding - quantity;
+        // 构造请求体
+        const requestBody = {
+          share: quantity,
+          code: selectedItem.symbol,
+          type: 0 // 0表示卖出
+        };
 
-        // 显示成功消息
-        showNotification(`Successfully sold ${quantity} ${selectedItem.symbol}!`);
+        // 显示加载状态
+        showNotification(`Processing sale of ${quantity} ${selectedItem.symbol}...`);
 
-        // 更新UI (持仓信息和总资产)
-        updateHoldingInfo();
-        calculateGrossAssets();
-
-        // 关闭模态框
-        closeSellModalFunc();
+        // 发送POST请求到后端
+        fetch('http://localhost:3000/transaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to process sale');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.message === 'success') {
+            // 更新用户持仓
+            userHoldings[selectedItem.symbol] = holding - quantity;
+            
+            // 显示成功消息
+            showNotification(`Successfully sold ${quantity} ${selectedItem.symbol}!`);
+            
+            // 更新UI (持仓信息和总资产)
+            updateHoldingInfo();
+            calculateGrossAssets();
+            
+            // 关闭模态框
+            closeSellModalFunc();
+          } else {
+            showNotification(`Sale failed: ${data.message}`, 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showNotification(`Sale failed: ${error.message}`, 'error');
+        });
       }
