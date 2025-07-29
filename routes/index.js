@@ -9,6 +9,7 @@ router.get('/', function(req, res, next) {
 
 
 
+
 router.get('/stock/:ticker', function(req, res, next) {
   const ticker = req.params.ticker;
   if (!ticker) {
@@ -34,6 +35,14 @@ router.get('/stock/:ticker', function(req, res, next) {
     console.error('Error processing request:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
+
+router.get('/main', function(req, res, next) {
+  res.render('main', { title: 'Portfolio Manager' });
+});
+
+router.get('/stock', function(req, res, next) {
+  res.render('stock', { title: 'Stock management' });
+
 });
 
 module.exports = router;
