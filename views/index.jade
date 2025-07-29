@@ -1,5 +1,28 @@
-extends layout
-
-block content
-  h1= title
-  p Welcome to #{title}
+doctype html
+html(lang="zh-CN")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title InnovateX | 创新团队
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    link(rel="stylesheet", href="/stylesheets/index.css")
+    
+  body
+    .background-container
+      .background-image
+    
+    header.header
+      .logo
+        i.fas.fa-rocket.logo-icon
+        .logo-text Team Console.log("PQJT")
+      .nav-buttons
+        button.nav-btn Stock
+        button.nav-btn Cash
+        button.nav-btn ETF
+    
+    .main-content
+      h1.title Portfolio Management System
+      p.team-subtitle Track, Analyze, and Grow Your Investments
+      button.cta-button Get Started
+    
+    script(src="/js/index.js")
