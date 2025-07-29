@@ -1,5 +1,6 @@
-import fs from 'fs';
-import pool from '../config/db.js';
+var fs = require('fs');
+var pool = require('../config/db');
+
 
 try {
     const rawData = fs.readFileSync('./Data/WMT_clean.json', 'utf8');
