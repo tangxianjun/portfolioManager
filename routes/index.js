@@ -1,6 +1,7 @@
 var pool = require('../config/db');
 var express = require('express');
-var buyService = require('../service/buy');
+var buyService = require('../service/transation');
+var myWealth = require('../service/myWealth');
 var router = express.Router();
 
 /* GET home page. */
@@ -8,12 +9,18 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-router.post('/trasaction', function(req, res, next) {
-  const { share, code } = req.body;
+router.get('/wealth', function(req, res, next) {
+  const results = myWealth();
+  res.json(results);
+});
+
+
+router.post('/transaction', function(req, res, next) {
+  const { share, code, type } = req.body;
   if (!share || !code) {  
     return res.status(400).json({ error: 'Share and code are required' });
   } else {
-    buyService(share, code)
+    buyService(share, code, type)
       .then(result => {
         res.json({ message: result });
       })

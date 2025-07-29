@@ -25,15 +25,15 @@ DROP TABLE IF EXISTS `wealth`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wealth` (
-  `id` int NOT NULL,
-  `code` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
   `share` int DEFAULT NULL,
   `avg_cost` decimal(20,6) DEFAULT NULL,
-  `curr_price` decimal(20,6) DEFAULT NULL,
   `time` timestamp(6) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `code_UNIQUE` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,6 +42,7 @@ CREATE TABLE `wealth` (
 
 LOCK TABLES `wealth` WRITE;
 /*!40000 ALTER TABLE `wealth` DISABLE KEYS */;
+INSERT INTO `wealth` VALUES (2,'AMZN',0,0.000000,NULL),(4,'AAPL',0,0.000000,NULL),(5,'ADDYY',0,0.000000,NULL),(6,'GOOGL',0,0.000000,NULL),(7,'META',0,0.000000,NULL),(8,'MSFT',0,0.000000,NULL),(9,'NKE',0,0.000000,NULL),(10,'NVDA',0,0.000000,NULL),(11,'TSLA',0,0.000000,NULL),(12,'WMT',0,0.000000,NULL);
 /*!40000 ALTER TABLE `wealth` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-29  5:46:23
+-- Dump completed on 2025-07-29  7:32:39
