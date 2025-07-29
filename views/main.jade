@@ -40,16 +40,23 @@ html(lang="en")
         display: flex;
         flex-direction: column;
         margin-left: 240px; /* 新增左边距 */
+        margin-top: 60px;
+        padding-top: 20px;
       }
 
       .header {
-        height: 60px;
-        background: #fff;
-        padding: 0 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #e5e7eb;
+            position: fixed;  /* 固定定位 */
+            top: 0;          /* 固定在顶部 */
+            left: 240px;     /* 与左侧导航栏宽度一致 */
+            right: 0;        /* 右侧对齐 */
+            height: 60px;
+            background: #fff;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e7eb;
+            z-index: 1000;   /* 确保在最上层 */
       }
 
       .header input {
