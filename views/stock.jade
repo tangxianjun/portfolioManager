@@ -533,13 +533,15 @@ html(lang="en")
       // 所有可用资产
       const allItems = [
         { symbol: 'AAPL', name: 'Apple Inc.' },
-        { symbol: 'MSFT', name: 'Microsoft Corporation' },
-        { symbol: 'GOOGL', name: 'Alphabet Inc.' },
+        { symbol: 'ADDYY', name: 'Adidas AG'},
         { symbol: 'AMZN', name: 'Amazon.com Inc.' },
-        { symbol: 'TSLA', name: 'Tesla Inc.' },
+        { symbol: 'GOOGL', name: 'Alphabet Inc.'},
         { symbol: 'META', name: 'Meta Platforms Inc.' },
+        { symbol: 'MSFT', name: 'Microsoft Corporation' },
+        { symbol: 'NKE', name: ' Nike Inc.' },
         { symbol: 'NVDA', name: 'NVIDIA Corporation' },
-        { symbol: 'NFLX', name: 'Netflix Inc.' }
+        { symbol: 'TSLA', name: 'Tesla Inc.' },
+        { symbol: 'WMT', name: 'Walmart Inc.' },
       ];
 
       // 用户持仓数据
@@ -682,9 +684,54 @@ html(lang="en")
             li.classList.add('active');
           }
           li.dataset.symbol = item.symbol;
+          let logoUrl = '';
+          switch(item.symbol) {
+            case 'AAPL':
+              logoUrl = 'https://logo.clearbit.com/apple.com';
+              break;
+            case 'ADDYY':
+              logoUrl = 'https://logo.clearbit.com/adidas.com';
+              break;
+            case 'AMZN':
+              logoUrl = 'https://logo.clearbit.com/amazon.com';
+              break;
+            case 'GOOGL':
+              logoUrl = 'https://logo.clearbit.com/google.com';
+              break;
+            case 'META':
+              logoUrl = 'https://logo.clearbit.com/meta.com';
+              break;
+            case 'MSFT':
+              logoUrl = 'https://logo.clearbit.com/microsoft.com';
+              break;
+            case 'NKE':
+              logoUrl = 'https://logo.clearbit.com/nike.com';
+              break;
+            case 'NVDA':
+              logoUrl = 'https://logo.clearbit.com/nvidia.com';
+              break;
+            case 'TSLA':
+              logoUrl = 'https://logo.clearbit.com/tesla.com';
+              break;
+            case 'WMT':
+              logoUrl = 'https://logo.clearbit.com/walmart.com';
+              break;
+            default:
+              logoUrl = 'https://logo.clearbit.com/' + item.name.toLowerCase().replace(/\s+/g, '') + '.com';
+          }
           li.innerHTML = `
-            <div class="item-symbol">${item.symbol}</div>
-            <div class="item-name">${item.name}</div>
+            <div class="item-content">
+              <div class="item-logo">
+                <img src="${logoUrl}" 
+                     alt="${item.symbol} logo" 
+                     style="width: 15%; height: 15%; border-radius: 20%; object-fit: contain;"
+                     onerror="this.parentElement.innerHTML='${item.symbol.charAt(0)}'">
+              </div>
+              <div class="item-info">
+                <div class="item-symbol">${item.symbol}</div>
+                <div class="item-name">${item.name}</div>
+              </div>
+            </div>
           `;
           li.addEventListener('click', () => selectItem(item));
           itemsList.appendChild(li);
@@ -700,8 +747,20 @@ html(lang="en")
             if (quantity > 0) {
               // 在 allItems 中找到对应资产
               const asset = allItems.find(item => item.symbol === symbol);
+
               if (asset && asset.price) {
                 grossAssetsValue += quantity * asset.price;
+                // 获取最新价格
+                fetch(`http://localhost:3000/stock/${symbol}/current_price`)
+                  .then(response => response.json())
+                  .then(priceData => {
+                  if (priceData && priceData.current_price) {
+                    grossAssetsValue += quantity * priceData.current_price;
+                  }
+                  })
+                  .catch(error => {
+                  console.error(`Error fetching current price for ${symbol}:`, error);
+                  });
               }
             }
           }
