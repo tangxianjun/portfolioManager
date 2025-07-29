@@ -521,6 +521,9 @@ html(lang="en")
         a.nav-link(href="#watchlist" class=(activeLink === 'watchlist' ? 'active' : ''))
           i.fas.fa-star(style="color: #1bd5e6ff") 
           | Watchlist
+        a.nav-link(href="http://localhost:3000/stock" target="_blank")  <!-- 新增Stock链接 -->
+          i.fas.fa-chart-bar(style="color: #2196F3")  <!-- 柱状图图标，蓝色 -->
+          | Stock Market
         a.nav-link(href="#settings" class=(activeLink === 'settings' ? 'active' : ''))
           i.fas.fa-cog(style="color: #e44242ff") 
           | Settings
