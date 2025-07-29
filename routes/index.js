@@ -35,7 +35,7 @@ router.get('/stock/:ticker', function(req, res, next) {
     console.error('Error processing request:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-
+});
 router.get('/main', function(req, res, next) {
   res.render('main', { title: 'Portfolio Manager' });
 });
