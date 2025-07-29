@@ -33,13 +33,24 @@ const buy = async (share, code, type) => {
             throw new Error('Not enough shares to sell');
         }
         curr_share = wealthRows[0]['share'] - share;
-        query = 'UPDATE wealth SET share = ? WHERE code = ?';
-        try {
-            await pool.query(query, [curr_share, code]);
-        } catch (error) {
-            console.error('Error updating wealth:', error);
-            throw error;
+        if (curr_share === 0) {
+            query = 'UPDATE wealth SET share = ?, avg_cost =? WHERE code = ?';
+            try {
+                await pool.query(query, [curr_share, 0, code]);
+            } catch (error) {
+                console.error('Error updating wealth:', error);
+                throw error;
+            }
+        } else {
+            query = 'UPDATE wealth SET share = ? WHERE code = ?';
+            try {
+                await pool.query(query, [curr_share, code]);
+            } catch (error) {
+                console.error('Error updating wealth:', error);
+                throw error;
+            }
         }
+        
     }
 
 
