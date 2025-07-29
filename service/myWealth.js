@@ -1,10 +1,11 @@
 var pool = require('../config/db');
 
-const myWealth = async (userId) => {
-    const query = 'SELECT * FROM wealth LEFT JOIN com_icon ON wealth.code = com_icon.code WHERE share > 0';
+const myWealth = async () => {
+    const query = 'SELECT * FROM wealth LEFT JOIN com_icon ON wealth.code = com_icon.code WHERE wealth.share > 0';
 
     try {
-        const [rows] = await pool.query(query, [userId]);
+        const [rows] = await pool.query(query);
+        console.log(rows);
         if (rows.length > 0) {
             return rows;
         } else {
