@@ -18,10 +18,10 @@ USE `portfoliomanager`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `trasaction`
+-- Table structure for table `transaction`
 --
 
-DROP TABLE IF EXISTS `trasanction`;
+DROP TABLE IF EXISTS `transaction`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `transaction` (
@@ -36,12 +36,12 @@ CREATE TABLE `transaction` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `trasaction`
+-- Dumping data for table `transaction`
 --
 
 LOCK TABLES `transaction` WRITE;
-/*!40000 ALTER TABLE `trasaction` DISABLE KEYS */;
-/*!40000 ALTER TABLE `trasaction` ENABLE KEYS */;
+/*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
+/*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-07-29  5:46:23
+-- Dump completed on 2025-07-29  7:32:39
