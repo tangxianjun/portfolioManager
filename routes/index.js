@@ -1,5 +1,6 @@
 var pool = require('../config/db');
 var express = require('express');
+var buyService = require('../service/buy');
 var router = express.Router();
 
 /* GET home page. */
@@ -7,7 +8,21 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-
+router.post('/trasaction', function(req, res, next) {
+  const { share, code } = req.body;
+  if (!share || !code) {  
+    return res.status(400).json({ error: 'Share and code are required' });
+  } else {
+    buyService(share, code)
+      .then(result => {
+        res.json({ message: result });
+      })
+      .catch(err => {
+        console.error('Error processing transaction:', err);
+        res.status(500).json({ error: 'Internal server error' });
+      });
+  }
+});
 
 
 router.get('/stock/:ticker', function(req, res, next) {
