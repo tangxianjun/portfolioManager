@@ -4,6 +4,7 @@ html(lang="en")
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     title Asset Management System
+    script(src="https://cdn.jsdelivr.net/npm/chart.js")
     style.
       * {
         margin: 0;
@@ -18,7 +19,6 @@ html(lang="en")
         position: relative;
         overflow: hidden;
       }
-      /* 背景图片和遮罩 */
       .background-overlay {
         position: absolute;
         top: 0;
@@ -30,7 +30,6 @@ html(lang="en")
         opacity: 0.2;
         z-index: -1;
       }
-      /* 装饰性元素 */
       .decorative-elements {
         position: absolute;
         top: 0;
@@ -86,7 +85,6 @@ html(lang="en")
         50% { transform: translateY(10px) translateX(-15px); }
         75% { transform: translateY(-15px) translateX(5px); }
       }
-      /* 左侧所有资产面板 */
       .items-panel {
         width: 300px;
         background: rgba(255, 255, 255, 0.95);
@@ -115,11 +113,10 @@ html(lang="en")
       .items-list {
         list-style: none;
       }
-      /* Gross Assets 项的特殊样式 */
       .gross-assets {
         padding: 15px;
         margin-bottom: 15px;
-        background: linear-gradient(135deg, #28a745, #20c997); /* 绿色渐变 */
+        background: linear-gradient(135deg, #28a745, #20c997);
         color: white;
         border-radius: 8px;
         font-weight: bold;
@@ -162,7 +159,6 @@ html(lang="en")
         color: #666;
         margin-top: 5px;
       }
-      /* 主内容区域 */
       .main-content {
         flex: 1;
         padding: 30px;
@@ -184,7 +180,6 @@ html(lang="en")
         content: "📈";
         margin-right: 15px;
       }
-      /* 操作按钮和持仓信息 */
       .action-bar {
         position: absolute;
         top: 30px;
@@ -228,10 +223,10 @@ html(lang="en")
         transform: translateY(0);
       }
       .buy-button {
-        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); /* 红色渐变 */
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
       }
       .sell-button {
-        background: linear-gradient(135deg, #5cdb95 0%, #0a8c47 100%); /* 绿色渐变 */
+        background: linear-gradient(135deg, #5cdb95 0%, #0a8c47 100%);
       }
       .holding-info {
         background: rgba(255, 255, 255, 0.8);
@@ -241,7 +236,6 @@ html(lang="en")
         color: #333;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
-      /* 模态框 (Buy & Sell) */
       .modal {
         display: none;
         position: fixed;
@@ -250,7 +244,7 @@ html(lang="en")
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.5); /* 半透明背景 */
+        background-color: rgba(0,0,0,0.5);
         justify-content: center;
         align-items: center;
       }
@@ -262,7 +256,7 @@ html(lang="en")
         max-width: 400px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         text-align: center;
-        position: relative; /* 为了关闭按钮定位 */
+        position: relative;
       }
       .close {
         color: #aaa;
@@ -318,7 +312,6 @@ html(lang="en")
         background: linear-gradient(135deg, #5cdb95 0%, #0a8c47 100%);
         color: white;
       }
-      /* 图表区域 */
       .chart-container {
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
@@ -333,6 +326,9 @@ html(lang="en")
       }
       .chart-header {
         margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
       .chart-title {
         font-size: 24px;
@@ -349,8 +345,16 @@ html(lang="en")
         color: #666;
         font-size: 14px;
       }
-      .chart-placeholder {
+      .chart-wrapper {
         flex: 1;
+        position: relative;
+      }
+      .chart-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -358,6 +362,8 @@ html(lang="en")
         font-size: 18px;
         text-align: center;
         flex-direction: column;
+        background: white;
+        z-index: 10;
       }
       .chart-placeholder-icon {
         font-size: 64px;
@@ -369,7 +375,28 @@ html(lang="en")
         0%, 100% { transform: scale(1); }
         50% { transform: scale(1.1); }
       }
-      /* 通知样式 */
+      #assetChart {
+        width: 100%;
+        height: 100%;
+      }
+      .chart-options {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+      .chart-period-btn {
+        padding: 5px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background: white;
+        cursor: pointer;
+        font-size: 12px;
+      }
+      .chart-period-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
       .notification {
         position: fixed;
         top: 20px;
@@ -383,13 +410,12 @@ html(lang="en")
         animation: slideIn 0.3s ease;
       }
       .notification.error {
-        background: #f44336; /* 红色背景表示错误 */
+        background: #f44336;
       }
       @keyframes slideIn {
         from { transform: translateX(100%); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
       }
-      /* 响应式设计 */
       @media (max-width: 768px) {
         .items-panel {
           width: 250px;
@@ -409,10 +435,10 @@ html(lang="en")
           width: 95%;
         }
         .modal-buttons {
-          flex-direction: column; /* 在小屏幕上垂直排列按钮 */
+          flex-direction: column;
         }
         .modal-button {
-          margin: 5px 0; /* 调整按钮间距 */
+          margin: 5px 0;
         }
       }
       @media (max-width: 480px) {
@@ -428,17 +454,16 @@ html(lang="en")
           padding: 15px;
         }
         .action-bar {
-          position: static; /* 变为静态定位 */
+          position: static;
           margin-bottom: 20px;
-          justify-content: center; /* 居中 */
+          justify-content: center;
         }
         .chart-container {
-          height: calc(100vh - 250px); /* 调整高度 */
+          height: calc(100vh - 250px);
         }
       }
 
   body
-    // 背景装饰元素
     .background-overlay
     .decorative-elements
       .chart-line.chart-line-1
@@ -449,34 +474,35 @@ html(lang="en")
       .floating-dot.dot-3
       .floating-dot.dot-4
     
-    // 左侧所有资产面板
     .items-panel
       .panel-header All Assets
       ul.items-list#itemsList
-        // Gross Assets 项将在这里动态插入
-        // 所有资产将在这里显示
     
-    // 主内容区域
     .main-content
       .content-header
         h1 Asset Details
       
-      // 操作栏：持仓信息、购买和卖出按钮
       .action-bar
         .holding-info#holdingInfo Holding: 0
         button.action-button.buy-button#buyButton BUY
         button.action-button.sell-button#sellButton SELL
       
-      // 图表区域
       .chart-container
         .chart-header
-          .chart-title#selectedItemTitle Select an asset
-          .chart-subtitle#selectedItemSubtitle Click on an asset from the list to view details
-        .chart-placeholder#chartPlaceholder
-          .chart-placeholder-icon 📈
-          div Asset details and trend will be displayed here
+          div
+            .chart-title#selectedItemTitle Select an asset
+            .chart-subtitle#selectedItemSubtitle Click on an asset from the list to view details
+          .chart-options#chartOptions
+            button.chart-period-btn.active(data-period="1M") 1M
+            button.chart-period-btn(data-period="3M") 3M
+            button.chart-period-btn(data-period="6M") 6M
+            button.chart-period-btn(data-period="1Y") 1Y
+        .chart-wrapper
+          .chart-placeholder#chartPlaceholder
+            .chart-placeholder-icon 📈
+            div Asset details and trend will be displayed here
+          canvas#assetChart
     
-    // 购买模态框
     #buyModal.modal
       .modal-content
         span.close#closeBuyModal &times;
@@ -489,7 +515,6 @@ html(lang="en")
           button.modal-button.cancel#cancelBuy Cancel
           button.modal-button.buy#confirmBuy Confirm Buy
     
-    // 卖出模态框
     #sellModal.modal
       .modal-content
         span.close#closeSellModal &times;
@@ -505,30 +530,30 @@ html(lang="en")
           button.modal-button.sell#confirmSell Confirm Sell
 
     script.
-      // 模拟所有可用资产数据 (包含价格)
+      // 所有可用资产
       const allItems = [
-        { symbol: 'AAPL', name: 'Apple Inc.', price: 150.25 },
-        { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 2750.80 },
-        { symbol: 'MSFT', name: 'Microsoft Corporation', price: 330.50 },
-        { symbol: 'TSLA', name: 'Tesla Inc.', price: 220.75 },
-        { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 3200.00 },
-        { symbol: 'NVDA', name: 'NVIDIA Corporation', price: 450.30 },
-        { symbol: 'META', name: 'Meta Platforms Inc.', price: 320.10 },
-        { symbol: 'NFLX', name: 'Netflix Inc.', price: 430.20 }
+        { symbol: 'AAPL', name: 'Apple Inc.' },
+        { symbol: 'MSFT', name: 'Microsoft Corporation' },
+        { symbol: 'GOOGL', name: 'Alphabet Inc.' },
+        { symbol: 'AMZN', name: 'Amazon.com Inc.' },
+        { symbol: 'TSLA', name: 'Tesla Inc.' },
+        { symbol: 'META', name: 'Meta Platforms Inc.' },
+        { symbol: 'NVDA', name: 'NVIDIA Corporation' },
+        { symbol: 'NFLX', name: 'Netflix Inc.' }
       ];
 
-      // 模拟用户持仓数据 (Symbol -> Quantity)
-      // 初始化一些持仓用于演示
+      // 用户持仓数据
       let userHoldings = {
         'AAPL': 10,
-        'GOOGL': 2,
-        'MSFT': 5
-        // 其他资产初始为0
+        'MSFT': 5,
+        'GOOGL': 2
       };
 
       // 全局变量
       let selectedItem = null;
-      let grossAssetsValue = 0; // 存储总资产价值
+      let grossAssetsValue = 0;
+      let assetChart = null;
+      let currentPeriod = '1M';
 
       // DOM元素
       const itemsList = document.getElementById('itemsList');
@@ -538,8 +563,10 @@ html(lang="en")
       const selectedItemTitle = document.getElementById('selectedItemTitle');
       const selectedItemSubtitle = document.getElementById('selectedItemSubtitle');
       const chartPlaceholder = document.getElementById('chartPlaceholder');
+      const chartOptions = document.getElementById('chartOptions');
+      const assetChartCanvas = document.getElementById('assetChart');
       
-      // Buy Modal Elements
+      // 购买模态框元素
       const buyModal = document.getElementById('buyModal');
       const buyModalItemSymbol = document.getElementById('buyModalItemSymbol');
       const buyQuantityInput = document.getElementById('buyQuantityInput');
@@ -547,7 +574,7 @@ html(lang="en")
       const confirmBuy = document.getElementById('confirmBuy');
       const closeBuyModal = document.getElementById('closeBuyModal');
 
-      // Sell Modal Elements
+      // 卖出模态框元素
       const sellModal = document.getElementById('sellModal');
       const sellModalItemSymbol = document.getElementById('sellModalItemSymbol');
       const availableQuantity = document.getElementById('availableQuantity');
@@ -558,7 +585,7 @@ html(lang="en")
 
       // 事件监听器
       document.addEventListener('DOMContentLoaded', function() {
-        // 初始化资产列表和 Gross Assets
+        // 初始化资产列表
         initializeItemsList();
         
         // 默认选中第一个资产
@@ -577,12 +604,10 @@ html(lang="en")
 
         // 卖出按钮点击事件
         sellButton.addEventListener('click', function() {
-          // 检查是否选中了资产
           if (!selectedItem) {
             showNotification('Please select an asset first.', 'error');
             return;
           }
-          // 检查是否持有该资产
           const holding = userHoldings[selectedItem.symbol] || 0;
           if (holding <= 0) {
             showNotification(`You do not hold any ${selectedItem.symbol}.`, 'error');
@@ -591,12 +616,26 @@ html(lang="en")
           openSellModal();
         });
 
-        // --- Buy Modal Event Listeners ---
+        // 图表时间周期按钮事件
+        chartOptions.querySelectorAll('.chart-period-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            chartOptions.querySelectorAll('.chart-period-btn').forEach(b => {
+              b.classList.remove('active');
+            });
+            this.classList.add('active');
+            currentPeriod = this.dataset.period;
+            if (selectedItem) {
+              fetchHistoricalData(selectedItem.symbol);
+            }
+          });
+        });
+
+        // 购买模态框事件
         cancelBuy.addEventListener('click', closeBuyModalFunc);
         confirmBuy.addEventListener('click', confirmPurchase);
         closeBuyModal.addEventListener('click', closeBuyModalFunc);
 
-        // --- Sell Modal Event Listeners ---
+        // 卖出模态框事件
         cancelSell.addEventListener('click', closeSellModalFunc);
         confirmSell.addEventListener('click', confirmSale);
         closeSellModal.addEventListener('click', closeSellModalFunc);
@@ -612,11 +651,11 @@ html(lang="en")
         });
       });
 
-      // 初始化左侧资产列表 (包含 Gross Assets)
+      // 初始化左侧资产列表
       function initializeItemsList() {
         itemsList.innerHTML = '';
         
-        // 1. 创建并插入 Gross Assets 项
+        // 创建并插入 Gross Assets 项
         const grossAssetsLi = document.createElement('li');
         grossAssetsLi.className = 'gross-assets';
         grossAssetsLi.id = 'grossAssetsItem';
@@ -628,14 +667,14 @@ html(lang="en")
         `;
         itemsList.appendChild(grossAssetsLi);
         
-        // 2. 插入分隔线或间距 (可选)
+        // 插入分隔线
         const separator = document.createElement('div');
         separator.style.height = '1px';
         separator.style.backgroundColor = '#eee';
         separator.style.margin = '15px 0';
         itemsList.appendChild(separator);
 
-        // 3. 创建并插入所有资产项
+        // 创建并插入所有资产项
         allItems.forEach(item => {
           const li = document.createElement('li');
           li.className = 'item';
@@ -659,9 +698,9 @@ html(lang="en")
           if (userHoldings.hasOwnProperty(symbol)) {
             const quantity = userHoldings[symbol];
             if (quantity > 0) {
-              // 在 allItems 中找到对应资产的价格
+              // 在 allItems 中找到对应资产
               const asset = allItems.find(item => item.symbol === symbol);
-              if (asset) {
+              if (asset && asset.price) {
                 grossAssetsValue += quantity * asset.price;
               }
             }
@@ -696,14 +735,20 @@ html(lang="en")
         
         // 更新持仓信息
         updateHoldingInfo();
+        
+        // 获取历史数据并渲染图表
+        fetchHistoricalData(item.symbol);
       }
 
       // 更新选中资产显示
       function updateSelectedItemDisplay() {
         if (selectedItem) {
           selectedItemTitle.textContent = `${selectedItem.symbol} - ${selectedItem.name}`;
-          selectedItemSubtitle.textContent = `Current Price: $${selectedItem.price.toFixed(2)}`;
-          showChartPlaceholder();
+          if (selectedItem.price) {
+            selectedItemSubtitle.textContent = `Current Price: $${selectedItem.price.toFixed(2)}`;
+          } else {
+            selectedItemSubtitle.textContent = 'Loading price data...';
+          }
         }
       }
 
@@ -715,17 +760,170 @@ html(lang="en")
         }
       }
 
-      // 显示图表占位符
-      function showChartPlaceholder() {
-        if (selectedItem) {
+      // 从API获取历史数据
+      function fetchHistoricalData(symbol) {
+        // 显示加载状态
+        chartPlaceholder.innerHTML = `
+          <div class="chart-placeholder-icon">⏳</div>
+          <div>Loading data for ${symbol}...</div>
+        `;
+        chartPlaceholder.style.display = 'flex';
+        
+        // 发起API请求
+        fetch(`http://localhost:3000/stock/${symbol}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.length === 0) {
+              throw new Error('No data available');
+            }
+            
+            // 更新当前价格（使用最新数据点）
+            if (data.length > 0) {
+              const latestData = data[0];
+              const price = parseFloat(latestData.vw);
+              selectedItem.price = price;
+              updateSelectedItemDisplay();
+            }
+            
+            // 渲染图表
+            renderChart(data);
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+            showNotification('Failed to load data. Please try again later.', 'error');
+            chartPlaceholder.innerHTML = `
+              <div class="chart-placeholder-icon">❌</div>
+              <div>Failed to load data</div>
+              <div style="font-size: 14px; margin-top: 10px;">${error.message}</div>
+            `;
+          });
+      }
+
+      // 使用API数据渲染图表
+      function renderChart(data) {
+        if (!data || data.length === 0) {
           chartPlaceholder.innerHTML = `
-            <div class="chart-placeholder-icon">📈</div>
-            <div>${selectedItem.symbol} Value Trend</div>
-            <div style="font-size: 14px; margin-top: 10px; color: #666;">
-              Detailed chart and analytics for ${selectedItem.name} will be displayed here.
-            </div>
+            <div class="chart-placeholder-icon">📊</div>
+            <div>No data available for ${selectedItem.symbol}</div>
           `;
+          return;
         }
+        
+        // 隐藏占位符
+        chartPlaceholder.style.display = 'none';
+        
+        // 准备数据
+        const dates = [];
+        const prices = [];
+        
+        // 按时间排序（从旧到新）
+        const sortedData = [...data].sort((a, b) => 
+          new Date(a.t) - new Date(b.t)
+        );
+        
+        sortedData.forEach(item => {
+          // 格式化日期: "Jul 25"
+          const date = new Date(item.t);
+          const formattedDate = date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric' 
+          });
+          dates.push(formattedDate);
+          prices.push(parseFloat(item.vw)); // 使用vw字段作为价格
+        });
+        
+        // 计算价格变化
+        const firstPrice = prices[0];
+        const lastPrice = prices[prices.length - 1];
+        const changePercent = ((lastPrice - firstPrice) / firstPrice * 100).toFixed(2);
+        
+        // 销毁现有图表
+        if (assetChart) {
+          assetChart.destroy();
+        }
+        
+        // 创建新图表
+        const ctx = assetChartCanvas.getContext('2d');
+        assetChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: dates,
+            datasets: [{
+              label: `${selectedItem.symbol} Price`,
+              data: prices,
+              borderColor: '#667eea',
+              backgroundColor: 'rgba(102, 126, 234, 0.1)',
+              borderWidth: 2,
+              pointRadius: 3,
+              pointBackgroundColor: '#667eea',
+              pointBorderColor: '#fff',
+              pointHoverRadius: 5,
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                titleFont: {
+                  size: 14
+                },
+                bodyFont: {
+                  size: 13
+                },
+                padding: 10,
+                callbacks: {
+                  label: function(context) {
+                    return `${selectedItem.symbol}: $${context.parsed.y.toFixed(2)}`;
+                  }
+                }
+              }
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  maxRotation: 0,
+                  autoSkip: true,
+                  maxTicksLimit: 8
+                }
+              },
+              y: {
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.05)'
+                },
+                ticks: {
+                  callback: function(value) {
+                    return '$' + value;
+                  }
+                }
+              }
+            },
+            interaction: {
+              mode: 'nearest',
+              axis: 'x',
+              intersect: false
+            },
+            animation: {
+              duration: 1000
+            }
+          }
+        });
       }
 
       // 显示通知
@@ -757,8 +955,7 @@ html(lang="en")
         }, 3000);
       }
 
-      // ========== BUY 功能 ==========
-      // 打开购买模态框
+      // ========== 购买功能 ==========
       function openBuyModal() {
         if (selectedItem) {
           buyModalItemSymbol.textContent = selectedItem.symbol;
@@ -768,12 +965,10 @@ html(lang="en")
         }
       }
 
-      // 关闭购买模态框
       function closeBuyModalFunc() {
         buyModal.style.display = 'none';
       }
 
-      // 确认购买
       function confirmPurchase() {
         if (!selectedItem) return;
 
@@ -790,16 +985,15 @@ html(lang="en")
         // 显示成功消息
         showNotification(`Successfully purchased ${quantity} ${selectedItem.symbol}!`);
 
-        // 更新UI (持仓信息 和 总资产)
+        // 更新UI (持仓信息和总资产)
         updateHoldingInfo();
-        calculateGrossAssets(); // 重新计算并更新总资产
+        calculateGrossAssets();
 
         // 关闭模态框
         closeBuyModalFunc();
       }
 
-      // ========== SELL 功能 ==========
-      // 打开卖出模态框
+      // ========== 卖出功能 ==========
       function openSellModal() {
         if (selectedItem) {
           const holding = userHoldings[selectedItem.symbol] || 0;
@@ -808,19 +1002,16 @@ html(lang="en")
             availableQuantity.textContent = holding;
             sellQuantityInput.value = 1;
             sellQuantityInput.max = holding; // 设置最大可售出量
-            sellQuantityInput.min = 1;
             sellModal.style.display = 'flex';
             sellQuantityInput.focus();
           }
         }
       }
 
-      // 关闭卖出模态框
       function closeSellModalFunc() {
         sellModal.style.display = 'none';
       }
 
-      // 确认卖出
       function confirmSale() {
         if (!selectedItem) return;
 
@@ -843,9 +1034,9 @@ html(lang="en")
         // 显示成功消息
         showNotification(`Successfully sold ${quantity} ${selectedItem.symbol}!`);
 
-        // 更新UI (持仓信息 和 总资产)
+        // 更新UI (持仓信息和总资产)
         updateHoldingInfo();
-        calculateGrossAssets(); // 重新计算并更新总资产
+        calculateGrossAssets();
 
         // 关闭模态框
         closeSellModalFunc();
