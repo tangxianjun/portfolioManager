@@ -21,10 +21,10 @@ USE `portfoliomanager`;
 -- Table structure for table `trasaction`
 --
 
-DROP TABLE IF EXISTS `trasaction`;
+DROP TABLE IF EXISTS `trasanction`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `trasaction` (
+CREATE TABLE `transaction` (
   `id` int NOT NULL AUTO_INCREMENT,
   `share` int DEFAULT NULL,
   `code` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE `trasaction` (
 -- Dumping data for table `trasaction`
 --
 
-LOCK TABLES `trasaction` WRITE;
+LOCK TABLES `transaction` WRITE;
 /*!40000 ALTER TABLE `trasaction` DISABLE KEYS */;
 /*!40000 ALTER TABLE `trasaction` ENABLE KEYS */;
 UNLOCK TABLES;
