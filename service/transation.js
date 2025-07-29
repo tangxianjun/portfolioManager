@@ -35,7 +35,7 @@ const buy = async (share, code, type) => {
         curr_share = wealthRows[0]['share'] - share;
         query = 'UPDATE wealth SET share = ? WHERE code = ?';
         try {
-            await pool.query(query, [curr_share, avg_cost, code]);
+            await pool.query(query, [curr_share, code]);
         } catch (error) {
             console.error('Error updating wealth:', error);
             throw error;
