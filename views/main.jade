@@ -135,7 +135,7 @@ html(lang="en")
       .retail { background: #8b5cf6; }    /* 紫色 - Retail */
       .other { background: #6b7280; }  
 
-      
+
       .logo {
         width: 20px;
         vertical-align: middle;
@@ -806,13 +806,13 @@ html(lang="en")
           }));
           
           // 更新饼图
-          pieChart.setOption({
-            title: { text: 'Asset Allocation', left: 'center' },
-            tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
-            legend: { bottom: 0 },
-            series: [{
-              type: 'pie',
-              radius: '50%',
+      pieChart.setOption({
+        title: { text: 'Asset Allocation', left: 'center' },
+        tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
+        legend: { bottom: 0 },
+        series: [{
+          type: 'pie',
+          radius: '50%',
               itemStyle: {
                 color: function(params) {
                   // 根据行业名称设置颜色，与sector标签颜色一致
@@ -829,8 +829,8 @@ html(lang="en")
                 }
               },
               data: pieData
-            }]
-          });
+        }]
+      });
         } catch (error) {
           console.error('Error loading pie chart data:', error);
         }
@@ -838,6 +838,7 @@ html(lang="en")
       
       // 页面加载时获取数据
       loadPieChartData();
+      setInterval(loadPieChartData, 10000); // 每10秒刷新
 
       function fetchCashBalance() {
         try {
