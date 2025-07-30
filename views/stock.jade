@@ -104,7 +104,11 @@ html(lang="en")
         border-bottom: 2px solid #eee;
         display: flex;
         align-items: center;
-        justify-content: center;
+      }
+      .panel-header::before {
+        content: "💰";
+        margin-right: 10px;
+        font-size: 20px;
       }
       .items-list {
         list-style: none;
@@ -223,16 +227,6 @@ html(lang="en")
       }
       .sell-button {
         background: linear-gradient(135deg, #5cdb95 0%, #0a8c47 100%);
-      }
-      .home-button {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
-      .panel-header .home-button {
-        width: 100%;
-        padding: 12px 20px;
-        font-size: 14px;
-        border-radius: 8px;
-        margin: 0;
       }
       .holding-info {
         background: rgba(255, 255, 255, 0.8);
@@ -488,8 +482,7 @@ html(lang="en")
       .floating-dot.dot-4
     
     .items-panel
-      .panel-header
-        button.action-button.home-button#homeButton 🏠 Dashboard
+      .panel-header All Assets
       ul.items-list#itemsList
     
     .main-content
@@ -563,7 +556,7 @@ html(lang="en")
 
       // 全局变量
       let selectedItem = null;
-      let grossAssetsValue = 0;
+      var grossAssetsValue = 0;
       let assetChart = null;
       let currentPeriod = '1M';
 
@@ -629,12 +622,6 @@ html(lang="en")
             return;
           }
           openSellModal();
-        });
-
-        // Dashboard按钮点击事件
-        const homeButton = document.getElementById('homeButton');
-        homeButton.addEventListener('click', function() {
-          window.location.href = '/main';
         });
 
         // 图表时间周期按钮事件
@@ -725,7 +712,7 @@ html(lang="en")
         // 初始计算总资产
         calculateGrossAssets();
         grossAssetsLi.innerHTML = `
-          <div>Gross Assets</div>
+          <div>Current investment amount</div>
           <div class="gross-assets-value" id="grossAssetsValue">$${grossAssetsValue.toFixed(2)}</div>
         `;
         itemsList.appendChild(grossAssetsLi);
@@ -808,11 +795,11 @@ html(lang="en")
             const quantity = userHoldings[symbol];
             if (quantity > 0) {
               // 获取最新价格
-              fetch(`http://localhost:3000/stock/${symbol}/current_price`)
+              fetch(`http://localhost:3000/stock/${symbol}`)
                 .then(response => response.json())
                 .then(priceData => {
-                  if (priceData && priceData.current_price) {
-                    grossAssetsValue += quantity * priceData.current_price;
+                  if (priceData && priceData[0].vw) {
+                    grossAssetsValue += quantity * priceData[0].vw;
                     // 更新 Gross Assets 显示
                     updateGrossAssetsDisplay();
                   }
@@ -831,7 +818,7 @@ html(lang="en")
       function updateGrossAssetsDisplay() {
         const grossAssetsElement = document.getElementById('grossAssetsValue');
         if (grossAssetsElement) {
-          grossAssetsElement.textContent = `$${grossAssetsValue.toFixed(2)}`;
+          grossAssetsElement.textContent = `\$${grossAssetsValue.toFixed(2)}`;
         }
       }
 
@@ -1121,17 +1108,13 @@ html(lang="en")
         })
         .then(data => {
           if (data.message === 'success') {
+            // 显示成功消息
             showNotification(`Successfully purchased ${quantity} ${selectedItem.symbol}!`);
-            // 通知主页面刷新
-            if (window.parent && window.parent !== window) {
-              if (window.parent.loadHoldings) window.parent.loadHoldings();
-              if (window.parent.loadPieChartData) window.parent.loadPieChartData();
-              if (window.parent.loadTransactions) {
-                console.log('Refreshing transactions in parent window...');
-                window.parent.loadTransactions();
-              }
-            }
+            
+            // 重新获取持仓数据（刷新界面）
             fetchUserHoldings();
+            
+            // 关闭模态框
             closeBuyModalFunc();
           } else {
             showNotification(`Purchase failed: ${data.message}`, 'error');
@@ -1141,6 +1124,8 @@ html(lang="en")
           console.error('Error:', error);
           showNotification(`Purchase failed: ${error.message}`, 'error');
         });
+        updateHoldingInfo();
+        calculateGrossAssets(); // 重新计算并更新总资产
       }
 
       // ========== 卖出功能 ==========
@@ -1204,17 +1189,13 @@ html(lang="en")
         })
         .then(data => {
           if (data.message === 'success') {
+            // 显示成功消息
             showNotification(`Successfully sold ${quantity} ${selectedItem.symbol}!`);
-            // 通知主页面刷新
-            if (window.parent && window.parent !== window) {
-              if (window.parent.loadHoldings) window.parent.loadHoldings();
-              if (window.parent.loadPieChartData) window.parent.loadPieChartData();
-              if (window.parent.loadTransactions) {
-                console.log('Refreshing transactions in parent window...');
-                window.parent.loadTransactions();
-              }
-            }
+            
+            // 重新获取持仓数据（刷新界面）
             fetchUserHoldings();
+            
+            // 关闭模态框
             closeSellModalFunc();
           } else {
             showNotification(`Sale failed: ${data.message}`, 'error');
@@ -1224,4 +1205,6 @@ html(lang="en")
           console.error('Error:', error);
           showNotification(`Sale failed: ${error.message}`, 'error');
         });
+        updateHoldingInfo();
+        calculateGrossAssets(); // 重新计算并更新总资产
       }
