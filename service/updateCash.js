@@ -7,7 +7,7 @@ const updateCash = async (cash, code) => {
     try {
         const [rows] = await pool.query(query);
         if (code == 0) {   
-            newCash = rows[0]['cash'] + cash;
+            newCash = Number(rows[0]['cash']) + Number(cash);
         } else if (code == 1) {
             if (rows[0]['cash'] < cash) {
                 throw new Error('Not enough cash to withdraw');
