@@ -1,7 +1,8 @@
 var pool = require('../config/db');
 
 const buy = async (share, code, type) => {
-    const select = 'SELECT * FROM tickers WHERE ticker = ? Order BY t DESC LIMIT 1';
+    const select = 'SELECT * FROM tickers WHERE ticker = ? Order BY t DESC LIMIT 20';
+    random_ = Math.floor(Math.random() * 20) + 1;
     var rows;
     try {
             [rows] = await pool.query(select, [code]);
@@ -12,13 +13,13 @@ const buy = async (share, code, type) => {
         console.error('Error fetching ticker:', error);
         throw error;
     }
-    console.log(rows[0]['vw']);
+    console.log(rows[random_]['vw']);
     var query = 'SELECT * FROM wealth WHERE code = ?';
     if (type == 0) {
         const [wealthRows] = await pool.query(query, [code]);
         curr_share = wealthRows[0]['share'] + share;
 
-        var cost = wealthRows[0]['avg_cost'] * wealthRows[0]['share'] + share * rows[0]['vw'];
+        var cost = wealthRows[0]['avg_cost'] * wealthRows[0]['share'] + share * rows[random_]['vw'];
         var avg_cost = cost / curr_share;
         query = 'UPDATE wealth SET share = ?, avg_cost = ? WHERE code = ?';
         try {
@@ -56,7 +57,7 @@ const buy = async (share, code, type) => {
 
     query = 'INSERT INTO transaction (share, code, status, time, price) VALUES (?, ?, ?, CURRENT_TIMESTAMP, ?)';
     try {
-        const [result] = await pool.query(query, [share, code, type, rows[0]['vw']]);
+        const [result] = await pool.query(query, [share, code, type, rows[random_]['vw']]);
         return "success";
     } catch (error) {
         console.error('Error inserting transaction:', error);
