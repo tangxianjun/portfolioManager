@@ -21,7 +21,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/main', express.static(path.join(__dirname, 'views')));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -39,11 +38,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.set('view engine', 'jade'); // 若用 pug 就改成 'pug'
-app.get('/', (req, res) => {
-  res.render('main'); // 不再需要额外参数
-});
-
-app.use('/', indexRouter);
+// 移除重复的路由配置
 
 module.exports = app;
