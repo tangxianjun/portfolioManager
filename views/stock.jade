@@ -461,7 +461,14 @@ html(lang="en")
         .chart-container {
           height: calc(100vh - 250px);
         }
+        .item-holding {
+          font-size: 12px;
+          color: #28a745;
+          font-weight: bold;
+          margin-top: 3px;
+       }
       }
+      
 
   body
     .background-overlay
@@ -544,12 +551,8 @@ html(lang="en")
         { symbol: 'WMT', name: 'Walmart Inc.' },
       ];
 
-      // 用户持仓数据
-      let userHoldings = {
-        'AAPL': 10,
-        'MSFT': 5,
-        'GOOGL': 2
-      };
+      // 用户持仓数据 - 初始为空，将从API获取
+      let userHoldings = {};
 
       // 全局变量
       let selectedItem = null;
@@ -589,6 +592,9 @@ html(lang="en")
       document.addEventListener('DOMContentLoaded', function() {
         // 初始化资产列表
         initializeItemsList();
+        
+        // 获取用户持仓数据
+        fetchUserHoldings();
         
         // 默认选中第一个资产
         if (allItems.length > 0) {
@@ -652,6 +658,48 @@ html(lang="en")
           }
         });
       });
+
+      // 从API获取用户持仓
+      function fetchUserHoldings() {
+        fetch('http://localhost:3000/wealth')
+          .then(response => response.json())
+          .then(data => {
+            // 重置持仓数据
+            userHoldings = {};
+            
+            // 将API响应转换为持仓对象 {symbol: quantity}
+            data.message.forEach(holding => {
+              userHoldings[holding.code] = holding.share;
+            });
+            
+            // 更新UI中的持仓显示
+            updateHoldingsDisplay();
+            
+            // 计算总资产
+            calculateGrossAssets();
+            
+            // 如果当前有选中的资产，更新其持仓信息
+            if (selectedItem) {
+              updateHoldingInfo();
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching holdings:', error);
+            showNotification('Failed to load holdings data', 'error');
+          });
+      }
+
+      // 更新资产列表中的持仓显示
+      function updateHoldingsDisplay() {
+        document.querySelectorAll('.item').forEach(itemEl => {
+          const symbol = itemEl.dataset.symbol;
+          const holding = userHoldings[symbol] || 0;
+          const holdingEl = itemEl.querySelector('.item-holding');
+          if (holdingEl) {
+            holdingEl.textContent = `Holding: ${holding}`;
+          }
+        });
+      }
 
       // 初始化左侧资产列表
       function initializeItemsList() {
@@ -730,6 +778,7 @@ html(lang="en")
               <div class="item-info">
                 <div class="item-symbol">${item.symbol}</div>
                 <div class="item-name">${item.name}</div>
+                <div class="item-holding">Holding: 0</div>
               </div>
             </div>
           `;
@@ -745,23 +794,19 @@ html(lang="en")
           if (userHoldings.hasOwnProperty(symbol)) {
             const quantity = userHoldings[symbol];
             if (quantity > 0) {
-              // 在 allItems 中找到对应资产
-              const asset = allItems.find(item => item.symbol === symbol);
-
-              if (asset && asset.price) {
-                grossAssetsValue += quantity * asset.price;
-                // 获取最新价格
-                fetch(`http://localhost:3000/stock/${symbol}/current_price`)
-                  .then(response => response.json())
-                  .then(priceData => {
+              // 获取最新价格
+              fetch(`http://localhost:3000/stock/${symbol}/current_price`)
+                .then(response => response.json())
+                .then(priceData => {
                   if (priceData && priceData.current_price) {
                     grossAssetsValue += quantity * priceData.current_price;
+                    // 更新 Gross Assets 显示
+                    updateGrossAssetsDisplay();
                   }
-                  })
-                  .catch(error => {
+                })
+                .catch(error => {
                   console.error(`Error fetching current price for ${symbol}:`, error);
-                  });
-              }
+                });
             }
           }
         }
@@ -1063,16 +1108,11 @@ html(lang="en")
         })
         .then(data => {
           if (data.message === 'success') {
-            // 更新用户持仓
-            const currentHolding = userHoldings[selectedItem.symbol] || 0;
-            userHoldings[selectedItem.symbol] = currentHolding + quantity;
-            
             // 显示成功消息
             showNotification(`Successfully purchased ${quantity} ${selectedItem.symbol}!`);
             
-            // 更新UI (持仓信息和总资产)
-            updateHoldingInfo();
-            calculateGrossAssets();
+            // 重新获取持仓数据（刷新界面）
+            fetchUserHoldings();
             
             // 关闭模态框
             closeBuyModalFunc();
@@ -1116,7 +1156,6 @@ html(lang="en")
           return;
         }
 
-        // 新增持仓量检测
         if (quantity > holding) {
           showNotification(`You cannot sell more than your current holding (${holding} ${selectedItem.symbol}).`, 'error');
           return;
@@ -1148,15 +1187,11 @@ html(lang="en")
         })
         .then(data => {
           if (data.message === 'success') {
-            // 更新用户持仓
-            userHoldings[selectedItem.symbol] = holding - quantity;
-            
             // 显示成功消息
             showNotification(`Successfully sold ${quantity} ${selectedItem.symbol}!`);
             
-            // 更新UI (持仓信息和总资产)
-            updateHoldingInfo();
-            calculateGrossAssets();
+            // 重新获取持仓数据（刷新界面）
+            fetchUserHoldings();
             
             // 关闭模态框
             closeSellModalFunc();
