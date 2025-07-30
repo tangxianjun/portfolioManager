@@ -1,0 +1,406 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Notifications
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    style.
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: Arial, sans-serif; display: flex; background: #f9fafb; color: #111; }
+      .sidebar {
+        width: 240px;
+        background: #fff;
+        height: 100vh;
+        padding: 20px;
+        border-right: 1px solid #e5e7eb;
+        position: fixed;
+        overflow-y: auto;
+      }
+      .sidebar-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #3730a3;
+        text-decoration: none;
+        margin-bottom: 24px;
+        letter-spacing: 1px;
+        transition: color 0.2s;
+      }
+      .sidebar-title:hover {
+        color: #4f46e5;
+      }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+      }
+      .sidebar-brand {
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        letter-spacing: 1px;
+      }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #111;
+        font-size: 16px;
+        transition: background 0.2s;
+      }
+      .sidebar nav a.active, .sidebar nav a:hover {
+        background: #eef2ff;
+        color: #4f46e5;
+        font-weight: bold;
+      }
+      .sidebar nav i {
+        font-size: 20px;
+        margin-right: 8px;
+      }
+      .header {
+        position: fixed;
+        top: 0;
+        left: 240px;
+        right: 0;
+        height: 60px;
+        background: #fff;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e5e7eb;
+        z-index: 1000;
+      }
+      .header input {
+        width: 40%;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .notification-bell {
+        position: relative;
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .notification-badge {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background: #ef4444;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 12px;
+        padding: 2px 6px;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+      .profile-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .profile-name {
+        font-size: 14px;
+        font-weight: bold;
+      }
+      .market-status {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+      }
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 2px;
+      }
+      .status-dot.green {
+        background: #22c55e;
+      }
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-left: 240px;
+        margin-top: 60px;
+        padding: 40px 0 0 0;
+        min-height: calc(100vh - 60px);
+        background: #f9fafb;
+      }
+      .mail-center-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0;
+        min-height: 700px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .mail-layout {
+        display: flex;
+        height: 600px;
+        min-height: 500px;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 4px 24px rgba(60,64,67,0.10);
+        overflow: hidden;
+      }
+      .mail-list-pane {
+        width: 320px;
+        background: #f9fafb;
+        border-right: 1.5px solid #e5e7eb;
+        overflow-y: auto;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .mail-list-header {
+        padding: 22px 24px 10px 24px;
+        font-size: 1.1rem;
+        color: #2196f3;
+        font-weight: bold;
+        border-bottom: 1.5px solid #e0e0e0;
+        background: #fff;
+      }
+      .mail-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .mail-list-item {
+        padding: 18px 24px 14px 24px;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 15px;
+        color: #333;
+        cursor: pointer;
+        background: #f9fafb;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        transition: background 0.15s;
+      }
+      .mail-list-item.unread {
+        font-weight: bold;
+        background: #f0f6ff;
+      }
+      .mail-list-item.selected {
+        background: #e3eafe;
+        border-left: 4px solid #2196f3;
+      }
+      .mail-list-item .mail-title-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .mail-list-item .mail-unread-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: #2196f3; display: inline-block;
+      }
+      .mail-list-item .mail-from { color: #1565c0; font-weight: bold; }
+      .mail-list-item .mail-time { color: #aaa; font-size: 12px; margin-left: 8px; }
+      .mail-list-item .mail-snippet { color: #444; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .mail-detail-pane {
+        flex: 1;
+        background: #fff;
+        padding: 36px 48px 32px 48px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+      }
+      .mail-detail-title {
+        font-size: 1.25rem;
+        color: #1565c0;
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+      .mail-detail-meta {
+        color: #888;
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+      .mail-detail-content {
+        color: #333;
+        font-size: 16px;
+        line-height: 1.7;
+        margin-bottom: 24px;
+      }
+      .mail-detail-actions {
+        display: flex;
+        gap: 18px;
+      }
+      .mail-detail-btn {
+        background: #2196f3;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: bold;
+        padding: 8px 22px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .mail-detail-btn:hover {
+        background: #1565c0;
+      }
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.08rem;
+        padding: 12px 0 12px 0;
+        margin-bottom: 6px;
+      }
+      .menu-icon {
+        width: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+  body
+    .sidebar
+      a.sidebar-title(href="/")
+        span.sidebar-logo
+          svg(width="28" height="28" viewBox="0 0 24 24" fill="none")
+            rect(x="2" y="10" width="4" height="10" fill="#4f46e5")
+            rect(x="8" y="6" width="4" height="14" fill="#22c55e")
+            rect(x="14" y="2" width="4" height="18" fill="#f59e0b")
+        span.sidebar-brand Portfolio
+      nav
+        a.nav-link(href="/main#dashboard")
+          i.fas.fa-chart-pie(style="color: #ded824ff")
+          | Dashboard
+        a.nav-link(href="/main#performance")
+          i.fas.fa-chart-line(style="color: #4f46e5")
+          | Performance
+        a.nav-link(href="/main#asset-allocation")
+          i.fas.fa-sitemap(style="color: #ec1cdaff")
+          | Asset Allocation
+        a.nav-link(href="/main#holdings")
+          i.fas.fa-wallet(style="color: #25bb57ff")
+          | Holdings
+        a.nav-link(href="/main#transaction-history")
+          i.fas.fa-exchange-alt(style="color: #e87a20ff")
+          | Transaction History
+        a.nav-link(href="/main#watchlist")
+          i.fas.fa-star(style="color: #1bd5e6ff")
+          | Watchlist
+        a.nav-link(href="/stock")
+          i.fas.fa-chart-bar(style="color: #2196F3")
+          | Stock Market
+        a.nav-link(href="/notifications")
+          i.fas.fa-bell(style="color: #2196f3")
+          | Notifications
+        a.nav-link(href="/settings")
+          i.fas.fa-cog(style="color: #e44242ff")
+          | Settings
+    .header
+      h3 Notification
+      input(type="text" placeholder="Search stocks, holdings...")
+      .header-actions
+        a.notification-bell#notificationBell(href="/notifications" style="color:inherit;")
+          i.fas.fa-bell
+          .notification-badge 3
+        a.user-profile(href="/settings" style="text-decoration: none; color: inherit;")
+          img.profile-avatar#settingsAvatar(src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Avatar")
+          span.profile-name#settingsProfileName JD
+          i.fas.fa-chevron-down
+        .market-status
+          span.status-dot.green
+          span Markets Open
+    .main
+      .mail-center-container
+        .mail-layout
+          .mail-list-pane
+            .mail-list-header Inbox
+            ul.mail-list#mailList
+              li.mail-list-item.unread.selected(data-id="0")
+                .mail-title-row
+                  span.mail-unread-dot
+                  span.mail-from Watchlist
+                  span.mail-time 2 min ago
+                .mail-snippet TSLA price alert: $900 reached!
+              li.mail-list-item(data-id="1")
+                .mail-title-row
+                  span.mail-from System
+                  span.mail-time 10 min ago
+                .mail-snippet AAPL added to your watchlist.
+              li.mail-list-item(data-id="2")
+                .mail-title-row
+                  span.mail-from Watchlist
+                  span.mail-time 1 hour ago
+                .mail-snippet NVDA price up 5% today!
+          .mail-detail-pane#mailDetail
+            .mail-detail-title TSLA price alert: $900 reached!
+            .mail-detail-meta From: Watchlist | 2 min ago
+            .mail-detail-content
+              | Tesla (TSLA) has reached your price alert of $900. Check your portfolio for more details.
+            .mail-detail-actions
+              button.mail-detail-btn(type="button") Mark as read
+              button.mail-detail-btn(type="button") Delete
+    script.
+      // 假数据
+      const mails = [
+        {
+          from: 'Watchlist',
+          time: '2 min ago',
+          title: 'TSLA price alert: $900 reached!',
+          content: 'Tesla (TSLA) has reached your price alert of $900. Check your portfolio for more details.',
+          unread: true
+        },
+        {
+          from: 'System',
+          time: '10 min ago',
+          title: 'AAPL added to your watchlist.',
+          content: 'Apple (AAPL) has been added to your watchlist. You will receive price alerts and news updates.',
+          unread: false
+        },
+        {
+          from: 'Watchlist',
+          time: '1 hour ago',
+          title: 'NVDA price up 5% today!',
+          content: 'NVIDIA (NVDA) is up 5% today. Consider reviewing your holdings for potential action.',
+          unread: false
+        }
+      ];
+      const mailList = document.getElementById('mailList');
+      const mailDetail = document.getElementById('mailDetail');
+      function renderMailDetail(idx) {
+        const mail = mails[idx];
+        mailDetail.innerHTML = `
+          <div class="mail-detail-title">${mail.title}</div>
+          <div class="mail-detail-meta">From: ${mail.from} | ${mail.time}</div>
+          <div class="mail-detail-content">${mail.content}</div>
+          <div class="mail-detail-actions">
+            <button class="mail-detail-btn" type="button">Mark as read</button>
+            <button class="mail-detail-btn" type="button">Delete</button>
+          </div>
+        `;
+      }
+      mailList.querySelectorAll('.mail-list-item').forEach(item => {
+        item.addEventListener('click', function() {
+          mailList.querySelectorAll('.mail-list-item').forEach(i => i.classList.remove('selected'));
+          this.classList.add('selected');
+          const idx = this.getAttribute('data-id');
+          renderMailDetail(idx);
+        });
+      }); 

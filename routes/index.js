@@ -10,20 +10,13 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/wealth', function(req, res, next) {
-  myWealth()
-  .then(results => {
-    console.log(results);
-    res.json({ message: results });
-  })
-  .catch(err => {
-    console.error('Error fetching wealth:', err);  
-    res.status(500).json({ error: 'Internal server error' });
-  });
-  // var results = myWealth();
-  // console.log(results);
-  // res.json({message: results});
+  const results = myWealth();
+  res.json(results);
 });
 
+router.get('/settings', function(req, res) {
+  res.render('settings');
+});
 
 router.post('/transaction', function(req, res, next) {
   const { share, code, type } = req.body;
@@ -75,6 +68,10 @@ router.get('/main', function(req, res, next) {
 router.get('/stock', function(req, res, next) {
   res.render('stock', { title: 'Stock management' });
 
+});
+
+router.get('/notifications', function(req, res) {
+  res.render('notifications');
 });
 
 module.exports = router;

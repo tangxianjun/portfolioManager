@@ -1,0 +1,676 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title User Settings
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    style.
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: Arial, sans-serif; display: flex; background: #f9fafb; color: #111; }
+      .sidebar {
+        width: 240px;
+        background: #fff;
+        height: 100vh;
+        padding: 20px;
+        border-right: 1px solid #e5e7eb;
+        position: fixed;
+        overflow-y: auto;
+      }
+      .sidebar h2 { font-size: 20px; margin-bottom: 20px; }
+      .sidebar nav a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #111;
+        font-size: 16px;
+        transition: background 0.2s;
+      }
+      .sidebar nav a.active, .sidebar nav a:hover {
+        background: #eef2ff;
+        color: #4f46e5;
+        font-weight: bold;
+      }
+      .sidebar nav i {
+        font-size: 20px;
+        margin-right: 8px;
+      }
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-left: 240px;
+        margin-top: 60px;
+        padding: 40px 0 0 0;
+      }
+      .header {
+        position: fixed;
+        top: 0;
+        left: 240px;
+        right: 0;
+        height: 60px;
+        background: #fff;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e5e7eb;
+        z-index: 1000;
+      }
+      .header input {
+        width: 40%;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .notification-bell {
+        position: relative;
+        font-size: 20px;
+        cursor: pointer;
+      }
+      .notification-badge {
+        position: absolute;
+        top: -6px;
+        right: -10px;
+        background: #ef4444;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 12px;
+        padding: 2px 6px;
+      }
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+      }
+      .profile-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .profile-name {
+        font-size: 14px;
+        font-weight: bold;
+      }
+      .market-status {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 14px;
+      }
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 2px;
+      }
+      .status-dot.green {
+        background: #22c55e;
+      }
+      .settings-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        max-width: 420px;
+        margin: 40px auto 0 auto;
+        padding: 32px 32px 24px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+      .settings-card h2 {
+        font-size: 22px;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      .avatar-upload {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .avatar-preview {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #e5e7eb;
+      }
+      .settings-form label {
+        font-size: 14px;
+        margin-bottom: 4px;
+        font-weight: bold;
+      }
+      .settings-form input[type="text"],
+      .settings-form input[type="email"],
+      .settings-form input[type="number"] {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        font-size: 15px;
+      }
+      .settings-form .form-group {
+        margin-bottom: 12px;
+      }
+      .settings-form button {
+        width: 100%;
+        padding: 10px 0;
+        background: #4f46e5;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: background 0.2s;
+      }
+      .settings-form button:hover {
+        background: #3730a3;
+      }
+      .settings-form .cash-btn {
+        background: #22c55e;
+        margin-top: 0;
+      }
+      .settings-form .cash-btn:hover {
+        background: #15803d;
+      }
+      .success-message {
+        color: #22c55e;
+        text-align: center;
+        margin-top: 8px;
+      }
+      .error-message {
+        color: #ef4444;
+        text-align: center;
+        margin-top: 8px;
+      }
+      .profile-settings-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 80vh;
+        background: linear-gradient(135deg, #e0e7ff 0%, #f9fafb 100%);
+        padding-top: 40px;
+      }
+      .profile-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 8px 32px rgba(80, 112, 255, 0.10);
+        padding: 40px 36px 32px 36px;
+        max-width: 420px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+      .profile-avatar-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .profile-avatar-large {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #a5b4fc;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 8px rgba(80,112,255,0.08);
+      }
+      .profile-card h2 {
+        font-size: 22px;
+        margin: 0 0 2px 0;
+        color: #3730a3;
+      }
+      .profile-email {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 0;
+      }
+      .profile-form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .profile-form label {
+        font-size: 14px;
+        color: #4f46e5;
+        font-weight: 600;
+      }
+      .profile-form input,
+      .profile-form select {
+        padding: 9px 12px;
+        border: 1px solid #c7d2fe;
+        border-radius: 7px;
+        font-size: 15px;
+        background: #f3f4f6;
+        transition: border 0.2s;
+      }
+      .profile-form input:focus,
+      .profile-form select:focus {
+        border: 1.5px solid #6366f1;
+        outline: none;
+        background: #fff;
+      }
+      .save-btn {
+        margin-top: 10px;
+        background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 12px 0;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(80,112,255,0.08);
+        transition: background 0.2s;
+      }
+      .save-btn:hover {
+        background: linear-gradient(90deg, #3730a3 0%, #2563eb 100%);
+      }
+      .success-message {
+        color: #22c55e;
+        text-align: center;
+        margin-top: 8px;
+      }
+      .error-message {
+        color: #ef4444;
+        text-align: center;
+        margin-top: 8px;
+      }
+      .settings-flex-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 48px;
+        padding: 60px 0 0 0;
+        min-height: 80vh;
+        background: linear-gradient(135deg, #e0e7ff 0%, #f9fafb 100%);
+      }
+      .info-card, .cash-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(80, 112, 255, 0.10);
+        padding: 38px 36px 32px 36px;
+        min-width: 340px;
+        max-width: 400px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+      }
+      .info-card h2, .cash-card h2 {
+        font-size: 22px;
+        margin-bottom: 18px;
+        color: #3730a3;
+      }
+      .avatar-upload-desktop {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .avatar-label {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+      .avatar-preview-large {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #a5b4fc;
+        box-shadow: 0 2px 8px rgba(80,112,255,0.08);
+        transition: box-shadow 0.2s;
+      }
+      .avatar-label:hover .avatar-preview-large {
+        box-shadow: 0 4px 16px #6366f1aa;
+      }
+      .avatar-edit-text {
+        font-size: 13px;
+        color: #6366f1;
+        margin-top: 2px;
+        text-decoration: underline;
+      }
+      .form-row {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 14px;
+      }
+      .info-card label, .cash-card label {
+        font-size: 14px;
+        color: #4f46e5;
+        font-weight: 600;
+      }
+      .info-card input,
+      .cash-card input {
+        padding: 9px 12px;
+        border: 1px solid #c7d2fe;
+        border-radius: 7px;
+        font-size: 15px;
+        background: #f3f4f6;
+        transition: border 0.2s;
+      }
+      .info-card input:focus,
+      .cash-card input:focus {
+        border: 1.5px solid #6366f1;
+        outline: none;
+        background: #fff;
+      }
+      .save-btn, .recharge-btn {
+        margin-top: 10px;
+        background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 12px 0;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(80,112,255,0.08);
+        transition: background 0.2s;
+        width: 100%;
+      }
+      .save-btn:hover, .recharge-btn:hover {
+        background: linear-gradient(90deg, #3730a3 0%, #2563eb 100%);
+      }
+      .success-message, .error-message {
+        width: 100%;
+        text-align: center;
+        margin-top: 8px;
+      }
+      .success-message { color: #22c55e; }
+      .error-message { color: #ef4444; }
+  body
+    .sidebar
+      a.sidebar-title(href="/")
+        span.sidebar-logo
+          svg(width="28" height="28" viewBox="0 0 24 24" fill="none")
+            rect(x="2" y="10" width="4" height="10" fill="#4f46e5")
+            rect(x="8" y="6" width="4" height="14" fill="#22c55e")
+            rect(x="14" y="2" width="4" height="18" fill="#f59e0b")
+        span.sidebar-brand Portfolio
+      nav
+        a.nav-link(href="/main#dashboard")
+          i.fas.fa-chart-pie(style="color: #ded824ff")
+          | Dashboard
+        a.nav-link(href="/main#performance")
+          i.fas.fa-chart-line(style="color: #4f46e5")
+          | Performance
+        a.nav-link(href="/main#asset-allocation")
+          i.fas.fa-sitemap(style="color: #ec1cdaff")
+          | Asset Allocation
+        a.nav-link(href="/main#holdings")
+          i.fas.fa-wallet(style="color: #25bb57ff")
+          | Holdings
+        a.nav-link(href="/main#transaction-history")
+          i.fas.fa-exchange-alt(style="color: #e87a20ff")
+          | Transaction History
+        a.nav-link(href="/main#watchlist")
+          i.fas.fa-star(style="color: #1bd5e6ff")
+          | Watchlist
+        a.nav-link(href="/stock")
+          i.fas.fa-chart-bar(style="color: #2196F3")
+          | Stock Market
+        a.nav-link(href="/notifications")
+          i.fas.fa-bell(style="color: #2196f3")
+          | Notifications
+        a.nav-link(href="/settings")
+          i.fas.fa-cog(style="color: #e44242ff")
+          | Settings
+    .header
+      h3 Settings
+      input(type="text" placeholder="Search stocks, holdings...")
+      .header-actions
+        a.notification-bell#notificationBell(href="/notifications" style="color:inherit;")
+          i.fas.fa-bell
+          .notification-badge 3
+        a.user-profile(href="/settings" style="text-decoration: none; color: inherit;")
+          img.profile-avatar#settingsAvatar(src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Avatar")
+          span.profile-name#settingsProfileName JD
+          i.fas.fa-chevron-down
+        .market-status
+          span.status-dot.green
+          span Markets Open
+    .main
+      .material-settings-container
+        .material-card
+          h2.material-title Account Settings
+          form#profileForm(autocomplete="off" onsubmit="return false;")
+            .material-avatar-row
+              label.material-avatar-label(for="avatarInput")
+                img.material-avatar#avatarPreview(src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar Preview")
+                input(type="file" id="avatarInput" accept="image/*" style="display:none;")
+                span.material-avatar-edit
+                  i.fas.fa-camera
+                  |  Change Photo
+            .material-form-row
+              .material-textfield
+                input(type="text" id="usernameInput" value="JD" required)
+                label(for="usernameInput") Username
+                span.material-bar
+              .material-textfield
+                input(type="email" id="emailInput" value="jd@example.com" required)
+                label(for="emailInput") Email
+                span.material-bar
+            button.material-btn(type="button" onclick="saveProfile()") Save Changes
+          .material-divider
+          h3.material-section-title Recharge Cash
+          form#cashForm(autocomplete="off" onsubmit="return false;")
+            .material-form-row
+              .material-textfield
+                input(type="number" id="cashAmountInput" min="1" required)
+                label(for="cashAmountInput") Amount
+                span.material-bar
+            button.material-btn.material-btn-accent(type="button" onclick="rechargeCash()") Recharge
+          .success-message#successMsg
+          .error-message#errorMsg
+          .success-message#cashSuccessMsg
+          .error-message#cashErrorMsg
+    style.
+      .material-settings-container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 80vh;
+        background: #f5f6fa;
+        padding: 60px 0 0 0;
+      }
+      .material-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(60, 64, 67, 0.10);
+        padding: 44px 48px 36px 48px;
+        max-width: 480px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+      }
+      .material-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a237e;
+        margin-bottom: 32px;
+        letter-spacing: 1px;
+        text-align: left;
+      }
+      .material-avatar-row {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 32px;
+      }
+      .material-avatar-label {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+      }
+      .material-avatar {
+        width: 84px;
+        height: 84px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #2196f3;
+        box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+        transition: box-shadow 0.2s;
+      }
+      .material-avatar-label:hover .material-avatar {
+        box-shadow: 0 4px 16px #2196f3aa;
+      }
+      .material-avatar-edit {
+        font-size: 13px;
+        color: #2196f3;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .material-form-row {
+        display: flex;
+        gap: 24px;
+        margin-bottom: 24px;
+      }
+      .material-textfield {
+        position: relative;
+        flex: 1;
+        margin-bottom: 0;
+      }
+      .material-textfield input {
+        width: 100%;
+        border: none;
+        border-bottom: 2px solid #cfd8dc;
+        outline: none;
+        font-size: 16px;
+        padding: 12px 0 8px 0;
+        background: transparent;
+        transition: border-color 0.2s;
+      }
+      .material-textfield input:focus {
+        border-bottom: 2px solid #2196f3;
+      }
+      .material-textfield label {
+        position: absolute;
+        left: 0;
+        top: 14px;
+        color: #757575;
+        font-size: 16px;
+        pointer-events: none;
+        transition: 0.2s cubic-bezier(.4,0,.2,1);
+      }
+      .material-textfield input:focus + label,
+      .material-textfield input:not(:placeholder-shown) + label {
+        top: -10px;
+        font-size: 13px;
+        color: #2196f3;
+        background: #fff;
+        padding: 0 4px;
+      }
+      .material-bar {
+        display: block;
+        height: 2px;
+        width: 100%;
+        background: transparent;
+      }
+      .material-btn {
+        background: #2196f3;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        padding: 12px 0;
+        cursor: pointer;
+        margin-top: 8px;
+        margin-bottom: 0;
+        box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+        transition: background 0.2s;
+        width: 100%;
+      }
+      .material-btn:hover {
+        background: #1565c0;
+      }
+      .material-btn-accent {
+        background: #43a047;
+      }
+      .material-btn-accent:hover {
+        background: #2e7d32;
+      }
+      .material-divider {
+        border: none;
+        border-top: 1.5px solid #e0e0e0;
+        margin: 36px 0 24px 0;
+      }
+      .material-section-title {
+        font-size: 1.15rem;
+        color: #1a237e;
+        font-weight: 600;
+        margin-bottom: 18px;
+      }
+      .success-message, .error-message {
+        width: 100%;
+        text-align: center;
+        margin-top: 8px;
+      }
+      .success-message { color: #43a047; }
+      .error-message { color: #e53935; }
+      .sidebar-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #3730a3;
+        text-decoration: none;
+        margin-bottom: 24px;
+        letter-spacing: 1px;
+        transition: color 0.2s;
+      }
+      .sidebar-title:hover {
+        color: #4f46e5;
+      }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+      }
+      .sidebar-brand {
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        letter-spacing: 1px;
+      }

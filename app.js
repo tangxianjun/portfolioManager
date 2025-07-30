@@ -44,5 +44,6 @@ app.get('/', (req, res) => {
   res.render('main'); // 不再需要额外参数
 });
 
+app.use('/', indexRouter);
 
 module.exports = app;

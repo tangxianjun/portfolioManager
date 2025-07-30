@@ -9,7 +9,7 @@ html(lang="en")
     style.
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body { font-family: Arial, sans-serif; display: flex; background: #f9fafb; color: #111; }
-      
+
       .sidebar {
         width: 240px;
         background: #fff;
@@ -479,60 +479,159 @@ html(lang="en")
         color: #6b7280;
       }
       .nav-link {
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        font-size: 1.08rem;
+        font-weight: 500;
+        padding: 12px 0 12px 0;
+        margin-bottom: 6px;
         display: flex;
         align-items: center;
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 8px;
+        gap: 12px;
+        color: #111;
         text-decoration: none;
-        color: inherit;
-        transition: all 0.3s ease;
+        border-radius: 8px;
+        transition: background 0.2s;
       }
-  
-      .nav-link:hover {
-        background-color: rgba(239, 242, 255, 0.5);
-      }
-      
-      .nav-link.active {
-        background-color: #eef2ff;
+      .nav-link.active, .nav-link:hover {
+        background: #eef2ff;
+        color: #4f46e5;
         font-weight: bold;
       }
-      
+
       .nav-link i {
         margin-right: 10px;
         width: 20px;
         text-align: center;
       }
 
+      .notification-panel {
+        position: fixed;
+        top: 70px;
+        right: 40px;
+        width: 340px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(60,64,67,0.18);
+        z-index: 2000;
+        padding: 0 0 12px 0;
+        animation: fadeIn 0.2s;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px);}
+        to { opacity: 1; transform: translateY(0);}
+      }
+      .notification-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px 10px 20px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #2196f3;
+        border-bottom: 1px solid #e0e0e0;
+      }
+      .notification-close {
+        font-size: 1.5rem;
+        color: #aaa;
+        cursor: pointer;
+        font-weight: normal;
+      }
+      .notification-list {
+        list-style: none;
+        margin: 0;
+        padding: 10px 20px 0 20px;
+        max-height: 260px;
+        overflow-y: auto;
+      }
+      .notification-list li {
+        padding: 10px 0 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 15px;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+      .notification-list li:last-child {
+        border-bottom: none;
+      }
+      .notification-list strong {
+        color: #1565c0;
+        margin-right: 6px;
+      }
+      .notification-list .time {
+        color: #aaa;
+        font-size: 12px;
+        margin-left: 10px;
+        white-space: nowrap;
+      }
 
+      .sidebar-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #3730a3;
+        text-decoration: none;
+        margin-bottom: 24px;
+        letter-spacing: 1px;
+        transition: color 0.2s;
+      }
+      .sidebar-title:hover {
+        color: #4f46e5;
+      }
+      .sidebar-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+      }
+      .sidebar-brand {
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        font-weight: 700;
+        font-size: 1.25rem;
+        letter-spacing: 1px;
+      }
 
   body
     .sidebar
-      h2 📊 Portfolio
+      a.sidebar-title(href="/")
+        span.sidebar-logo
+          svg(width="28" height="28" viewBox="0 0 24 24" fill="none")
+            rect(x="2" y="10" width="4" height="10" fill="#4f46e5")
+            rect(x="8" y="6" width="4" height="14" fill="#22c55e")
+            rect(x="14" y="2" width="4" height="18" fill="#f59e0b")
+        span.sidebar-brand Portfolio
       nav
-        a.nav-link(href="#dashboard" class=(activeLink === 'dashboard' ? 'active' : ''))
+        a.nav-link(href="/main#dashboard")
           i.fas.fa-chart-pie(style="color: #ded824ff")
           | Dashboard
-        a.nav-link(href="#performance" class=(activeLink === 'performance' ? 'active' : ''))
-          i.fas.fa-chart-line(style="color: #4f46e5") 
+        a.nav-link(href="/main#performance")
+          i.fas.fa-chart-line(style="color: #4f46e5")
           | Performance
-        a.nav-link(href="#asset-allocation" class=(activeLink === 'asset-allocation' ? 'active' : ''))
-          i.fas.fa-sitemap(style="color: #ec1cdaff") 
+        a.nav-link(href="/main#asset-allocation")
+          i.fas.fa-sitemap(style="color: #ec1cdaff")
           | Asset Allocation
-        a.nav-link(href="#holdings" class=(activeLink === 'holdings' ? 'active' : ''))
+        a.nav-link(href="/main#holdings")
           i.fas.fa-wallet(style="color: #25bb57ff")
           | Holdings
-        a.nav-link(href="#transaction-history" class=(activeLink === 'transaction-history' ? 'active' : ''))
-          i.fas.fa-exchange-alt(style="color: #e87a20ff") 
+        a.nav-link(href="/main#transaction-history")
+          i.fas.fa-exchange-alt(style="color: #e87a20ff")
           | Transaction History
-        a.nav-link(href="#watchlist" class=(activeLink === 'watchlist' ? 'active' : ''))
-          i.fas.fa-star(style="color: #1bd5e6ff") 
+        a.nav-link(href="/main#watchlist")
+          i.fas.fa-star(style="color: #1bd5e6ff")
           | Watchlist
-        a.nav-link(href="http://localhost:3000/stock" target="_blank")  <!-- 新增Stock链接 -->
-          i.fas.fa-chart-bar(style="color: #2196F3")  <!-- 柱状图图标，蓝色 -->
+        a.nav-link(href="/stock")
+          i.fas.fa-chart-bar(style="color: #2196F3")
           | Stock Market
-        a.nav-link(href="#settings" class=(activeLink === 'settings' ? 'active' : ''))
-          i.fas.fa-cog(style="color: #e44242ff") 
+        
+        a.nav-link(href="/notifications")
+          i.fas.fa-bell(style="color: #2196f3")
+          | Notifications
+        a.nav-link(href="/settings")
+          i.fas.fa-cog(style="color: #e44242ff")
           | Settings
 
     .main
@@ -540,12 +639,12 @@ html(lang="en")
         h3 PortfolioTracker
         input(type="text" placeholder="Search stocks, holdings...")
         .header-actions
-         .notification-bell
+          a.notification-bell#notificationBell(href="/notifications" style="color:inherit;")
             i.fas.fa-bell
             .notification-badge 3
-          .user-profile
-            img.profile-avatar(src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Avatar")
-            span.profile-name JD
+          a.user-profile(href="/settings" style="text-decoration: none; color: inherit;")
+            img.profile-avatar#settingsAvatar(src="https://randomuser.me/api/portraits/men/32.jpg" alt="User Avatar")
+            span.profile-name#settingsProfileName JD
             i.fas.fa-chevron-down
           .market-status
             span.status-dot.green
@@ -576,7 +675,7 @@ html(lang="en")
       .charts
         #performance
         #asset-allocation
-  
+
         #line-chart.chart-box
         #pie-chart.chart-box
 
@@ -706,10 +805,10 @@ html(lang="en")
               img.stock-logo(src="https://logo.clearbit.com/microsoft.com" alt="MSFT Logo")
               .stock-tooltip  <!-- 悬浮提示框 -->
                 #msft-mini-chart.mini-chart  <!-- 迷你图表容器 -->
-                .tooltip-footer 
+                .tooltip-footer
                   span Last 7 days
                   span.green +2.4%
-            
+
             .stock-info
               .ticker MSFT
               .company-name Microsoft Corporation
@@ -763,53 +862,53 @@ html(lang="en")
             .change.red ↘ −$1.85 (−1.37%)
             .volume Vol: 39.2M
 
- script.
-  // 主图表初始化
-  const pieChart = echarts.init(document.getElementById('pie-chart'));
-  pieChart.setOption({
-    title: { text: 'Asset Allocation', left: 'center' },
-    tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
-    legend: { bottom: 0 },
-    series: [{
-      type: 'pie',
-      radius: '50%',
-      data: [
-        { value: 45.2, name: 'Technology' },
-        { value: 18.7, name: 'Healthcare' },
-        { value: 15.3, name: 'Financial' },
-        { value: 12.1, name: 'Consumer Goods' },
-        { value: 8.7, name: 'Energy' }
-      ]
-    }]
-  });
+    script.
+      // 主图表初始化
+      const pieChart = echarts.init(document.getElementById('pie-chart'));
+      pieChart.setOption({
+        title: { text: 'Asset Allocation', left: 'center' },
+        tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
+        legend: { bottom: 0 },
+        series: [{
+          type: 'pie',
+          radius: '50%',
+          data: [
+            { value: 45.2, name: 'Technology' },
+            { value: 18.7, name: 'Healthcare' },
+            { value: 15.3, name: 'Financial' },
+            { value: 12.1, name: 'Consumer Goods' },
+            { value: 8.7, name: 'Energy' }
+          ]
+        }]
+      });
 
-  const lineChart = echarts.init(document.getElementById('line-chart'));
-  lineChart.setOption({
-    title: { text: 'Portfolio Performance' },
-    tooltip: { trigger: 'axis' },
-    xAxis: { type: 'category', data: ['Feb', 'Apr', 'Jun', 'Aug', 'Oct', 'Dec'] },
-    yAxis: { type: 'value' },
-    series: [{ data: [30000, 50000, 70000, 90000, 110000, 130000], type: 'line' }]
-  });
+      const lineChart = echarts.init(document.getElementById('line-chart'));
+      lineChart.setOption({
+        title: { text: 'Portfolio Performance' },
+        tooltip: { trigger: 'axis' },
+        xAxis: { type: 'category', data: ['Feb', 'Apr', 'Jun', 'Aug', 'Oct', 'Dec'] },
+        yAxis: { type: 'value' },
+        series: [{ data: [30000, 50000, 70000, 90000, 110000, 130000], type: 'line' }]
+      });
 
-  // 使用ECharts创建迷你折线图
-  function initMiniCharts() {
-    // MSFT示例数据
-    const msftChart = echarts.init(document.getElementById('msft-mini-chart'));
-    msftChart.setOption({
-      grid: { top: 5, right: 5, bottom: 5, left: 5 },
-      xAxis: { type: 'category', show: false, data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
-      yAxis: { type: 'value', show: false },
-      series: [{
-        type: 'line',
-        smooth: true,
-        data: [310, 408, 500, 415, 650],
-        lineStyle: { color: '#10b981', width: 2 },
-        areaStyle: { color: 'rgba(16, 185, 129, 0.1)' }
-      }]
-    });
-    // 其他股票图表同理...
-  }
-  
-  // 页面加载后初始化
-  window.addEventListener('load', initMiniCharts);
+      // 使用ECharts创建迷你折线图
+      function initMiniCharts() {
+        // MSFT示例数据
+        const msftChart = echarts.init(document.getElementById('msft-mini-chart'));
+        msftChart.setOption({
+          grid: { top: 5, right: 5, bottom: 5, left: 5 },
+          xAxis: { type: 'category', show: false, data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
+          yAxis: { type: 'value', show: false },
+          series: [{
+            type: 'line',
+            smooth: true,
+            data: [310, 408, 500, 415, 650],
+            lineStyle: { color: '#10b981', width: 2 },
+            areaStyle: { color: 'rgba(16, 185, 129, 0.1)' }
+          }]
+        });
+        // 其他股票图表同理...
+      }
+
+      // 页面加载后初始化
+      window.addEventListener('load', initMiniCharts);
