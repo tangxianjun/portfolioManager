@@ -86,6 +86,7 @@ html(lang="en")
       }
       .card h4 { font-size: 14px; color: #555; margin-bottom: 8px; }
       .card p { font-size: 20px; font-weight: bold; }
+      #cash-balance { font-size: 20px; font-weight: bold; }
       .gain { color: green; font-size: 14px; }
       .loss { color: red; font-size: 14px; }
 
@@ -678,7 +679,8 @@ html(lang="en")
             .gain +24.56% all time
           .card
             h4 Cash Balance
-            p $8,432.10
+            #cash-balance
+             p $99999.99
             div Available to invest
 
       .charts
@@ -837,6 +839,24 @@ html(lang="en")
       // 页面加载时获取数据
       loadPieChartData();
 
+      function fetchCashBalance() {
+        try {
+          fetch('http://localhost:3000/cash')
+            .then(response => response.json())
+            .then(data => {
+              if (data && data.cash) {
+                document.getElementById('cash-balance').textContent = '$'+data.cash;
+              } else {
+                throw new Error('Invalid data format');
+              }
+            });
+        } catch (error) {
+          console.error('Error fetching cash balance:', error);
+          document.getElementById('cash-balance').textContent = 'Error loading data';
+          document.getElementById('cash-balance').style.color = 'red';
+        }
+      }
+
       const lineChart = echarts.init(document.getElementById('line-chart'));
       lineChart.setOption({
         title: { text: 'Portfolio Performance' },
@@ -866,4 +886,7 @@ html(lang="en")
       }
 
       // 页面加载后初始化
-      window.addEventListener('load', initMiniCharts);
+      window.addEventListener('load', () => {
+        fetchCashBalance();
+        initMiniCharts();
+      });
