@@ -10,6 +10,17 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.get('/cash', function(req, res, next) {
+  getCurrentCash()
+    .then(cash => {
+      res.json({ cash: cash });
+    })
+    .catch(err => {
+      console.error('Error fetching current cash:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+});
+
 router.post('/addCash', function(req, res, next) {
   const cash = req.body.cash;
   updateCash(cash, 0)
