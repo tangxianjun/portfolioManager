@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  title: Worker Stock Holdings API
+  version: 1.0.0
+  description: API for retrieving a worker's personal stock portfolio
+  contact:
+    name: API Support
+    email: support@example.com
+
+paths:
+  /wealth:
+    get:
+      summary: Retrieve worker's stock holdings
+      description: Returns a list of stocks held by an individual worker
+      operationId: getWorkerStockHoldings
+      tags:
+        - Worker Portfolio
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                    - code
+                    - share
+                    - avg_cost
+                    - name
+                    - time
+                  properties:
+                    id:
+                      type: integer
+                      description: Unique holding ID
+                      example: 78901
+                    code:
+                      type: string
+                      description: Stock ticker symbol
+                      example: "AAPL"
+                      minLength: 2
+                      maxLength: 6
+                    share:
+                      type: number
+                      format: float
+                      description: Number of shares held by the worker
+                      example: 150.5
+                    avg_cost:
+                      type: number
+                      format: float
+                      description: Worker's average purchase price per share
+                      example: 145.67
+                    url:
+                      type: string
+                      format: uri
+                      description: URL of the company's logo
+                      example: "https://example.com/logos/apple.png"
+                    sector:
+                      type: string
+                      description: Industry sector of the company
+                      example: "Technology"
+                    name:
+                      type: string
+                      description: Company name
+                      example: "Apple Inc."
+                    time:
+                      type: integer
+                      description: Timestamp of last portfolio update (milliseconds)
+                      example: 1722297600000
+        '401':
+          description: Unauthorized - missing or invalid authentication
+        '403':
+          description: Forbidden - authenticated user doesn't have access
+        '404':
+          description: No holdings found for this worker
+        '500':
+          description: Internal server error
+      parameters:
+        - name: showDetails
+          in: query
+          description: Return additional holding details
+          required: false
+          schema:
+            type: boolean
+          example: true
+        - name: currency
+          in: query
+          description: Currency for value calculations
+          required: false
+          schema:
+            type: string
+            enum: [USD, EUR, CNY, JPY]
+          example: USD
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
