@@ -2,12 +2,26 @@ var pool = require('../config/db');
 var express = require('express');
 var buyService = require('../service/transation');
 var myWealth = require('../service/myWealth');
+const updateCash = require('../service/updateCash');
 var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+
+router.post('/addCash', function(req, res, next) {
+  const cash = req.body.cash;
+  updateCash(cash, 0)
+    .then(() => {
+      res.json({ message: 'Cash updated successfully' });
+    })
+    .catch(err => {
+      console.error('Error updating cash:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+});
+
 
 router.get('/wealth', function(req, res, next) {
   myWealth()

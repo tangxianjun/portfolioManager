@@ -1,4 +1,6 @@
 var pool = require('../config/db');
+const getCurrentPrice = require('./currPrice');
+const updateCash = require('./updateCash');
 
 const buy = async (share, code, type) => {
     const select = 'SELECT * FROM tickers WHERE ticker = ? Order BY t DESC LIMIT 20';
@@ -20,6 +22,11 @@ const buy = async (share, code, type) => {
         curr_share = wealthRows[0]['share'] + share;
 
         var cost = wealthRows[0]['avg_cost'] * wealthRows[0]['share'] + share * rows[random_]['vw'];
+        updateCash(share * rows[random_]['vw'], 1)
+        .catch(err => {
+            console.error('Error updating cash:', err);
+            throw new Error('Internal server error');
+        });
         var avg_cost = cost / curr_share;
         query = 'UPDATE wealth SET share = ?, avg_cost = ? WHERE code = ?';
         try {
@@ -51,6 +58,14 @@ const buy = async (share, code, type) => {
                 throw error;
             }
         }
+        getCurrentPrice(code)
+        .then(price => {
+            updateCash(share * price, 0)
+            .catch(err => {
+                console.error('Error updating cash:', err);
+                throw new Error('Internal server error');
+            });
+        })
         
     }
 
