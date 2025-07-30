@@ -9,7 +9,7 @@ const myWealth = async () => {
             const [tickerRows] = await pool.query(query, [rows[i]['code']]);
             rows[i]["current_price"] = tickerRows.length > 0 ? tickerRows[0]['vw'] : null;
             rows[i]["value"] = rows[i]['share'] * rows[i]['avg_cost'];
-            rows[i]['balance'] = rows[i]['share'] * (rows[i]['current_price'] - rows[i]['avg_cost']);
+            rows[i]['balance'] = 0;
         }
         console.log(rows);
         if (rows.length > 0) {
