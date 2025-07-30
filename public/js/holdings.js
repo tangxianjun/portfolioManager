@@ -25,7 +25,7 @@ function renderHoldings(holdings) {
         // 确保数值有效
         const currentPrice = parseFloat(holding.current_price) || 0;
         const marketValue = parseFloat(holding.value) || 0;
-        const unrealizedPL = parseFloat(holding.banlance) || 0;
+        const unrealizedPL = parseInt(holding.balance) || 0;
         const isGain = unrealizedPL >= 0;
         
         // 添加调试信息
@@ -69,4 +69,5 @@ function getSectorClass(sector) {
 // 页面加载时执行
 document.addEventListener('DOMContentLoaded', function() {
     loadHoldings();
+    setInterval(loadHoldings, 10000); // 每10秒刷新
 }); 

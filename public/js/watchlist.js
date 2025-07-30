@@ -739,4 +739,5 @@ function updateWatchlistDisplay(stocks) {
 // 页面加载时初始化
 document.addEventListener('DOMContentLoaded', function() {
     new WatchlistManager();
+    setInterval(loadRealWatchlistData, 10000); // 每10秒刷新
 }); 

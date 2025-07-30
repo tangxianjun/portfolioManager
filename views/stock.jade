@@ -1108,13 +1108,13 @@ html(lang="en")
         })
         .then(data => {
           if (data.message === 'success') {
-            // 显示成功消息
             showNotification(`Successfully purchased ${quantity} ${selectedItem.symbol}!`);
-            
-            // 重新获取持仓数据（刷新界面）
+            // 通知主页面刷新
+            if (window.parent && window.parent !== window) {
+              if (window.parent.loadHoldings) window.parent.loadHoldings();
+              if (window.parent.loadPieChartData) window.parent.loadPieChartData();
+            }
             fetchUserHoldings();
-            
-            // 关闭模态框
             closeBuyModalFunc();
           } else {
             showNotification(`Purchase failed: ${data.message}`, 'error');
@@ -1187,13 +1187,13 @@ html(lang="en")
         })
         .then(data => {
           if (data.message === 'success') {
-            // 显示成功消息
             showNotification(`Successfully sold ${quantity} ${selectedItem.symbol}!`);
-            
-            // 重新获取持仓数据（刷新界面）
+            // 通知主页面刷新
+            if (window.parent && window.parent !== window) {
+              if (window.parent.loadHoldings) window.parent.loadHoldings();
+              if (window.parent.loadPieChartData) window.parent.loadPieChartData();
+            }
             fetchUserHoldings();
-            
-            // 关闭模态框
             closeSellModalFunc();
           } else {
             showNotification(`Sale failed: ${data.message}`, 'error');
