@@ -10,8 +10,14 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/wealth', function(req, res, next) {
-  const results = myWealth();
-  res.json(results);
+  myWealth()
+    .then(wealth => {
+      res.json({message: wealth});
+    })
+    .catch(err => {
+      console.error('Error fetching wealth:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
 });
 
 router.get('/settings', function(req, res) {
