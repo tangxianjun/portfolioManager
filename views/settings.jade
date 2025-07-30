@@ -484,6 +484,10 @@ html(lang="en")
                 span.material-bar
             button.material-btn(type="button" onclick="saveProfile()") Save Changes
           .material-divider
+          h3.material-section-title Current Cash Balance
+          .current-cash-display
+            p#currentCashDisplay $0.00
+          .material-divider
           h3.material-section-title Recharge Cash
           form#cashForm(autocomplete="off" onsubmit="return false;")
             .material-form-row
@@ -492,10 +496,19 @@ html(lang="en")
                 label(for="cashAmountInput") Amount
                 span.material-bar
             button.material-btn.material-btn-accent(type="button" onclick="rechargeCash()") Recharge
-          .success-message#successMsg
-          .error-message#errorMsg
           .success-message#cashSuccessMsg
           .error-message#cashErrorMsg
+          .material-divider
+          h3.material-section-title Withdraw Cash
+          form#withdrawForm(autocomplete="off" onsubmit="return false;")
+            .material-form-row
+              .material-textfield
+                input(type="number" id="withdrawAmountInput" min="1" required)
+                label(for="withdrawAmountInput") Amount
+                span.material-bar
+            button.material-btn.material-btn-danger(type="button" onclick="withdrawCash()") Withdraw
+          .success-message#withdrawSuccessMsg
+          .error-message#withdrawErrorMsg
     style.
       .material-settings-container {
         display: flex;
@@ -628,6 +641,22 @@ html(lang="en")
       .material-btn-accent:hover {
         background: #2e7d32;
       }
+      .material-btn-danger {
+        background: #f44336;
+      }
+      .material-btn-danger:hover {
+        background: #d32f2f;
+      }
+      .current-cash-display {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+      .current-cash-display p {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a237e;
+        margin: 0;
+      }
       .material-divider {
         border: none;
         border-top: 1.5px solid #e0e0e0;
@@ -674,3 +703,100 @@ html(lang="en")
         font-size: 1.25rem;
         letter-spacing: 1px;
       }
+    script.
+      // 充钱功能
+      async function rechargeCash() {
+        const amount = document.getElementById('cashAmountInput').value;
+        const successMsg = document.getElementById('cashSuccessMsg');
+        const errorMsg = document.getElementById('cashErrorMsg');
+        
+        if (!amount || amount <= 0) {
+          showMessage(errorMsg, 'Please enter a valid amount');
+          return;
+        }
+        
+        try {
+          const response = await fetch('/addCash', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cash: parseFloat(amount) })
+          });
+          
+          if (response.ok) {
+            showMessage(successMsg, `Successfully added $${parseFloat(amount).toLocaleString()} to your account`);
+            document.getElementById('cashAmountInput').value = '';
+            // 刷新主页面的现金余额显示
+            if (window.parent && window.parent.updateStats) {
+              window.parent.updateStats();
+            }
+            // 立即刷新页面
+            location.reload();
+          } else {
+            const error = await response.json();
+            showMessage(errorMsg, error.message || 'Failed to add cash');
+          }
+        } catch (error) {
+          showMessage(errorMsg, 'Network error. Please try again.');
+        }
+      }
+      
+      // 取钱功能
+      async function withdrawCash() {
+        const amount = document.getElementById('withdrawAmountInput').value;
+        const successMsg = document.getElementById('withdrawSuccessMsg');
+        const errorMsg = document.getElementById('withdrawErrorMsg');
+        
+        if (!amount || amount <= 0) {
+          showMessage(errorMsg, 'Please enter a valid amount');
+          return;
+        }
+        
+        try {
+          const response = await fetch('/withdrawCash', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ cash: parseFloat(amount) })
+          });
+          
+          if (response.ok) {
+            showMessage(successMsg, `Successfully withdrew $${parseFloat(amount).toLocaleString()} from your account`);
+            document.getElementById('withdrawAmountInput').value = '';
+            // 刷新主页面的现金余额显示
+            if (window.parent && window.parent.updateStats) {
+              window.parent.updateStats();
+            }
+            // 立即刷新页面
+            location.reload();
+          } else {
+            const error = await response.json();
+            showMessage(errorMsg, error.message || 'Failed to withdraw cash');
+          }
+        } catch (error) {
+          showMessage(errorMsg, 'Network error. Please try again.');
+        }
+      }
+      
+      // 显示消息
+      function showMessage(element, message) {
+        element.textContent = message;
+        element.style.display = 'block';
+        setTimeout(() => {
+          element.style.display = 'none';
+        }, 3000);
+      }
+      
+      // 页面加载时获取当前现金余额
+      document.addEventListener('DOMContentLoaded', async function() {
+        try {
+          const response = await fetch('/cash');
+          const data = await response.json();
+          const currentCash = data.cash || 0;
+          document.getElementById('currentCashDisplay').textContent = `$${parseFloat(currentCash).toLocaleString()}`;
+        } catch (error) {
+          console.error('Error fetching current cash:', error);
+        }
+      });

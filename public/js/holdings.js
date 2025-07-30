@@ -25,11 +25,11 @@ function renderHoldings(holdings) {
         // 确保数值有效
         const currentPrice = parseFloat(holding.current_price) || 0;
         const marketValue = parseFloat(holding.value) || 0;
-        const unrealizedPL = parseInt(holding.balance) || 0;
+        const unrealizedPL = parseFloat(holding.balance);
         const isGain = unrealizedPL >= 0;
         
         // 添加调试信息
-        console.log('Holding:', holding.code, 'banlance:', holding.banlance, 'type:', typeof holding.banlance);
+        console.log('Holding:', holding.code, 'balance:', holding.balance, 'type:', typeof holding.balance);
         
         return `
             <tr>

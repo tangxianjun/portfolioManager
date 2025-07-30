@@ -104,11 +104,7 @@ html(lang="en")
         border-bottom: 2px solid #eee;
         display: flex;
         align-items: center;
-      }
-      .panel-header::before {
-        content: "💰";
-        margin-right: 10px;
-        font-size: 20px;
+        justify-content: center;
       }
       .items-list {
         list-style: none;
@@ -227,6 +223,16 @@ html(lang="en")
       }
       .sell-button {
         background: linear-gradient(135deg, #5cdb95 0%, #0a8c47 100%);
+      }
+      .home-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .panel-header .home-button {
+        width: 100%;
+        padding: 12px 20px;
+        font-size: 14px;
+        border-radius: 8px;
+        margin: 0;
       }
       .holding-info {
         background: rgba(255, 255, 255, 0.8);
@@ -482,7 +488,8 @@ html(lang="en")
       .floating-dot.dot-4
     
     .items-panel
-      .panel-header All Assets
+      .panel-header
+        button.action-button.home-button#homeButton 🏠 Dashboard
       ul.items-list#itemsList
     
     .main-content
@@ -622,6 +629,12 @@ html(lang="en")
             return;
           }
           openSellModal();
+        });
+
+        // Dashboard按钮点击事件
+        const homeButton = document.getElementById('homeButton');
+        homeButton.addEventListener('click', function() {
+          window.location.href = '/main';
         });
 
         // 图表时间周期按钮事件
@@ -1113,6 +1126,10 @@ html(lang="en")
             if (window.parent && window.parent !== window) {
               if (window.parent.loadHoldings) window.parent.loadHoldings();
               if (window.parent.loadPieChartData) window.parent.loadPieChartData();
+              if (window.parent.loadTransactions) {
+                console.log('Refreshing transactions in parent window...');
+                window.parent.loadTransactions();
+              }
             }
             fetchUserHoldings();
             closeBuyModalFunc();
@@ -1192,6 +1209,10 @@ html(lang="en")
             if (window.parent && window.parent !== window) {
               if (window.parent.loadHoldings) window.parent.loadHoldings();
               if (window.parent.loadPieChartData) window.parent.loadPieChartData();
+              if (window.parent.loadTransactions) {
+                console.log('Refreshing transactions in parent window...');
+                window.parent.loadTransactions();
+              }
             }
             fetchUserHoldings();
             closeSellModalFunc();

@@ -4,6 +4,7 @@ var buyService = require('../service/transation');
 var myWealth = require('../service/myWealth');
 const updateCash = require('../service/updateCash');
 const getCurrentCash = require('../service/currCash');
+const getTransactionHistory = require('../service/myTransation');
 var router = express.Router();
 
 /* GET home page. */
@@ -34,6 +35,22 @@ router.post('/addCash', function(req, res, next) {
     });
 });
 
+router.post('/withdrawCash', function(req, res, next) {
+  const cash = req.body.cash;
+  updateCash(cash, 1)
+    .then(() => {
+      res.json({ message: 'Cash withdrawn successfully' });
+    })
+    .catch(err => {
+      console.error('Error withdrawing cash:', err);
+      if (err.message === 'Not enough cash to withdraw') {
+        res.status(400).json({ error: 'Not enough cash to withdraw' });
+      } else {
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+});
+
 
 router.get('/wealth', function(req, res, next) {
   myWealth()
@@ -42,6 +59,29 @@ router.get('/wealth', function(req, res, next) {
     })
     .catch(err => {
       console.error('Error fetching wealth:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+});
+
+router.get('/transactions', function(req, res, next) {
+  getTransactionHistory()
+    .then(transactions => {
+      res.json({message: transactions});
+    })
+    .catch(err => {
+      console.error('Error fetching transactions:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+});
+
+router.delete('/transactions', function(req, res, next) {
+  const query = 'DELETE FROM transaction';
+  pool.query(query)
+    .then(() => {
+      res.json({ message: 'All transactions cleared successfully' });
+    })
+    .catch(err => {
+      console.error('Error clearing transactions:', err);
       res.status(500).json({ error: 'Internal server error' });
     });
 });
@@ -243,6 +283,70 @@ router.post('/watchlist/batch-delete', function(req, res, next) {
     })
     .catch(err => {
       console.error('Error batch removing stocks from watchlist:', err);
+      res.status(500).json({ error: 'Internal server error' });
+    });
+});
+
+// Portfolio Performance API - 获取交易历史数据用于性能图表
+router.get('/portfolio-performance', function(req, res, next) {
+  const query = `
+    SELECT 
+      t.time,
+      t.share,
+      t.price,
+      t.status,
+      c.name,
+      c.sector,
+      c.url,
+      CASE 
+        WHEN t.status = 1 THEN 'BUY'
+        WHEN t.status = 0 THEN 'SELL'
+        ELSE 'UNKNOWN'
+      END as type
+    FROM transaction t
+    LEFT JOIN com_icon c ON t.code = c.code
+    ORDER BY t.time ASC
+  `;
+  
+  pool.query(query)
+    .then(([rows]) => {
+      // 计算每个时间点的总价值
+      const performanceData = [];
+      let currentTotalValue = 0;
+      let currentCash = 100000; // 假设初始现金
+      
+      rows.forEach((transaction, index) => {
+        const transactionTime = new Date(transaction.time);
+        const formattedTime = transactionTime.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        // 计算交易对总价值的影响
+        const transactionValue = transaction.share * transaction.price;
+        if (transaction.status === 1) { // BUY
+          currentCash -= transactionValue;
+        } else if (transaction.status === 0) { // SELL
+          currentCash += transactionValue;
+        }
+        
+        // 这里简化计算，实际应该根据持仓计算股票价值
+        // 为了演示，我们使用一个简单的增长模型
+        const stockValue = currentTotalValue * 1.02; // 假设2%增长
+        currentTotalValue = stockValue;
+        
+        performanceData.push({
+          time: formattedTime,
+          totalValue: currentCash + currentTotalValue
+        });
+      });
+      
+      res.json({ message: performanceData });
+    })
+    .catch(err => {
+      console.error('Error fetching portfolio performance:', err);
       res.status(500).json({ error: 'Internal server error' });
     });
 });
