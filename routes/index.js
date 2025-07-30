@@ -3,6 +3,7 @@ var express = require('express');
 var buyService = require('../service/transation');
 var myWealth = require('../service/myWealth');
 const updateCash = require('../service/updateCash');
+const getCurrentCash = require('../service/currCash');
 var router = express.Router();
 
 /* GET home page. */
