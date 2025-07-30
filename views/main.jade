@@ -7,6 +7,8 @@ html(lang="en")
     script(src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js")
     script(src="/js/holdings.js")
     script(src="/js/watchlist.js")
+    script(src="/js/transactions.js")
+    script(src="/js/main.js")
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
     style.
       * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -257,6 +259,71 @@ html(lang="en")
       .txn-amount {
         font-weight: bold;
         font-size: 18px;
+      }
+      
+      .txn-amount-positive { color: #10b981; }
+      .txn-amount-negative { color: #ef4444; }
+      
+      .buy-icon { 
+        color: #ef4444; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .sell-icon { 
+        color: #10b981; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .dividend-icon { color: #3b82f6; }
+      
+      .loading-transactions {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+        font-style: italic;
+      }
+      
+      .error-message {
+        text-align: center;
+        padding: 20px;
+        color: #ef4444;
+        font-weight: bold;
+      }
+      
+      .no-transactions {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+        font-style: italic;
+      }
+      
+      .transactions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      
+      .clear-transactions-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+      
+      .clear-transactions-btn:hover {
+        background: #dc2626;
+      }
+      
+      .clear-transactions-btn:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
       }
 
       .txn-time {
@@ -667,16 +734,16 @@ html(lang="en")
         .card-row
           .card
             h4 Total Value
-            p $124,567.89
-            .gain +2,345.67 (+1.92%)
+            p#totalValue $0.00
+            
           .card
-            h4 Today's Change
-            p +$1,234.56
-            .gain +0.99% vs yesterday
+            h4 Total Stock Value
+            p#totalStockValue $0.00
+            
           .card
             h4 Total Return
-            p +$24,567.89
-            .gain +24.56% all time
+            p#totalReturn $0.00
+            
           .card
             h4 Cash Balance
             #cash-balance
@@ -709,67 +776,11 @@ html(lang="en")
 
       .transactions-section
        #transaction-history.transactions-section
-        h2 Recent Transactions
-
-        .transaction-card
-          .txn-left
-            .txn-icon
-              svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7")
-            img.txn-logo(src="https://logo.clearbit.com/nvidia.com" alt="NVDA Logo")
-            .txn-info
-              .ticker NVDA
-              .company NVIDIA Corporation
-              .details 20 shares @ $875.2
-          .txn-right
-            .txn-type BUY
-            .txn-amount -$17,504
-            .txn-time 2024-07-25 09:30 AM
-
-        .transaction-card
-          .txn-left
-            .txn-icon
-              svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7")
-            img.txn-logo(src="https://logo.clearbit.com/tesla.com" alt="TSLA Logo")
-            .txn-info
-              .ticker TSLA
-              .company Tesla Inc.
-              .details 50 shares @ $245.6
-          .txn-right
-            .txn-type SELL
-            .txn-amount +$12,280
-            .txn-time 2024-07-25 10:00 AM
-
-        .transaction-card
-          .txn-left
-            .txn-icon
-              svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7")
-            img.txn-logo(src="https://logo.clearbit.com/apple.com" alt="AAPL Logo")
-            .txn-info
-              .ticker AAPL
-              .company Apple Inc.
-              .details 75 shares @ $189.95
-          .txn-right
-            .txn-type BUY
-            .txn-amount -$14,246.25
-            .txn-time 2024-07-25 11:15 AM
-
-        .transaction-card
-          .txn-left
-            .txn-icon
-              svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7")
-            img.txn-logo(src="https://logo.clearbit.com/google.com" alt="GOOGL Logo")
-            .txn-info
-              .ticker GOOGL
-              .company Alphabet Inc.
-              .details Dividend $2.50
-          .txn-right
-            .txn-type DIVIDEND
-            .txn-amount +$187.50
-            .txn-time 2024-07-25 12:45 PM
+        .transactions-header
+          h2 Recent Transactions
+          button.clear-transactions-btn(onclick="clearAllTransactions()") Clear All
+        #transactionsContainer
+          .loading-transactions Loading transactions...
 
       .watchlist-section
        #watchlist.watchlist-section
@@ -781,64 +792,118 @@ html(lang="en")
         #watchlistContainer
 
     script.
-      // 主图表初始化
-      const pieChart = echarts.init(document.getElementById('pie-chart'));
-      
-      // 加载动态数据并更新饼图
-      async function loadPieChartData() {
-        try {
-          const response = await fetch('/wealth');
-          const data = await response.json();
-          const holdings = data.message;
-          
-          // 按sector分组并计算总value
-          const sectorData = {};
-          holdings.forEach(holding => {
-            const sector = holding.sector || 'Unknown';
-            const value = parseFloat(holding.value) || 0;
-            sectorData[sector] = (sectorData[sector] || 0) + value;
-          });
-          
-          // 转换为饼图数据格式
-          const pieData = Object.entries(sectorData).map(([sector, value]) => ({
-            name: sector,
-            value: value
-          }));
-          
-          // 更新饼图
-      pieChart.setOption({
-        title: { text: 'Asset Allocation', left: 'center' },
-        tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
-        legend: { bottom: 0 },
-        series: [{
-          type: 'pie',
-          radius: '50%',
-              itemStyle: {
-                color: function(params) {
-                  // 根据行业名称设置颜色，与sector标签颜色一致
-                  const colorMap = {
-                    'Technology': '#3b82f6',    // 蓝色 - .tech
-                    'Healthcare': '#ef4444',    // 红色 - .health
-                    'Financial': '#10b981',     // 绿色 - .finance
-                    'Consumer Goods': '#8b5cf6', // 紫色 - .consumer
-                    'Energy': '#f59e0b',        // 橙色 - .energy
-                    'Automotive': '#10b981',    // 绿色 - .auto
-                    'Retail': '#8b5cf6'         // 紫色 - .retail
-                  };
-                  return colorMap[params.name] || '#6b7280'; // 默认灰色 - .other
-                }
-              },
-              data: pieData
-        }]
-      });
-        } catch (error) {
-          console.error('Error loading pie chart data:', error);
+      document.addEventListener('DOMContentLoaded', function() {
+        // --- Pie Chart ---
+        const pieChartElement = document.getElementById('pie-chart');
+        let pieChart = null;
+        if (pieChartElement) {
+          pieChart = echarts.init(pieChartElement);
+          // 加载动态数据并更新饼图
+          async function loadPieChartData() {
+            try {
+              const response = await fetch('/wealth');
+              const data = await response.json();
+              const holdings = data.message;
+              // 按sector分组并计算总value
+              const sectorData = {};
+              holdings.forEach(holding => {
+                const sector = holding.sector || 'Unknown';
+                const value = parseFloat(holding.value) || 0;
+                sectorData[sector] = (sectorData[sector] || 0) + value;
+              });
+              // 转换为饼图数据格式
+              const pieData = Object.entries(sectorData).map(([sector, value]) => ({
+                name: sector,
+                value: value
+              }));
+              // 更新饼图
+              pieChart.setOption({
+                title: { text: 'Asset Allocation', left: 'center' },
+                tooltip: { trigger: 'item', formatter: '{b}: {d}%' },
+                legend: { bottom: 0 },
+                series: [{
+                  type: 'pie',
+                  radius: '50%',
+                  itemStyle: {
+                    color: function(params) {
+                      const colorMap = {
+                        'Technology': '#3b82f6',
+                        'Healthcare': '#ef4444',
+                        'Financial': '#10b981',
+                        'Consumer Goods': '#8b5cf6',
+                        'Energy': '#f59e0b',
+                        'Automotive': '#10b981',
+                        'Retail': '#8b5cf6'
+                      };
+                      return colorMap[params.name] || '#6b7280';
+                    }
+                  },
+                  data: pieData
+                }]
+              });
+            } catch (error) {
+              console.error('Error loading pie chart data:', error);
+            }
+          }
+          loadPieChartData();
+          setInterval(loadPieChartData, 10000);
+        } else {
+          console.error('Pie chart element not found!');
         }
-      }
-      
-      // 页面加载时获取数据
-      loadPieChartData();
-      setInterval(loadPieChartData, 10000); // 每10秒刷新
+
+        // --- Line Chart ---
+        const lineChartElement = document.getElementById('line-chart');
+        let lineChart = null;
+        if (lineChartElement) {
+          lineChart = echarts.init(lineChartElement);
+          // 加载Portfolio Performance数据
+          async function loadPortfolioPerformance() {
+            try {
+              if (!lineChart) return;
+              const response = await fetch('/portfolio-performance');
+              if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+              const data = await response.json();
+              const performanceData = data.message || [];
+              if (performanceData.length === 0) {
+                lineChart.setOption({
+                  title: { text: 'Portfolio Performance' },
+                  tooltip: { trigger: 'axis' },
+                  xAxis: { type: 'category', data: ['No Data'] },
+                  yAxis: { type: 'value' },
+                  series: [{ data: [0], type: 'line' }]
+                });
+                return;
+              }
+              // 提取时间和总价值数据
+              const timeData = performanceData.map(item => item.time);
+              const valueData = performanceData.map(item => item.totalValue);
+              // 更新图表
+              lineChart.setOption({
+                title: { text: 'Portfolio Performance' },
+                tooltip: {
+                  trigger: 'axis',
+                  formatter: function(params) {
+                    return `${params[0].name}<br/>Total Value: $${params[0].value.toLocaleString()}`;
+                  }
+                },
+                xAxis: {
+                  type: 'category',
+                  data: timeData,
+                  axisLabel: { rotate: 45, fontSize: 10 }
+                },
+                yAxis: { type: 'value' },
+                series: [{ data: valueData, type: 'line', smooth: true }]
+              });
+            } catch (error) {
+              console.error('Error loading portfolio performance:', error);
+            }
+          }
+          loadPortfolioPerformance();
+          setInterval(loadPortfolioPerformance, 30000);
+        } else {
+          console.error('Line chart element not found!');
+        }
+      });
 
       function fetchCashBalance() {
         try {
@@ -857,15 +922,6 @@ html(lang="en")
           document.getElementById('cash-balance').style.color = 'red';
         }
       }
-
-      const lineChart = echarts.init(document.getElementById('line-chart'));
-      lineChart.setOption({
-        title: { text: 'Portfolio Performance' },
-        tooltip: { trigger: 'axis' },
-        xAxis: { type: 'category', data: ['Feb', 'Apr', 'Jun', 'Aug', 'Oct', 'Dec'] },
-        yAxis: { type: 'value' },
-        series: [{ data: [30000, 50000, 70000, 90000, 110000, 130000], type: 'line' }]
-      });
 
       // 使用ECharts创建迷你折线图
       function initMiniCharts() {

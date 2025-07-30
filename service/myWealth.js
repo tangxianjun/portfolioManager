@@ -7,10 +7,14 @@ const myWealth = async () => {
         for (var i = 0; i < rows.length; i++) {
             query = 'SELECT * FROM tickers WHERE ticker = ? ORDER BY t DESC LIMIT 1';
             const [tickerRows] = await pool.query(query, [rows[i]['code']]);
-            rows[i]["current_price"] = tickerRows.length > 0 ? tickerRows[0]['vw'] : null;
-            rows[i]["value"] = rows[i]['share'] * rows[i]['avg_cost'];
+            rows[i]["current_price"] = tickerRows.length > 0 ? parseFloat(tickerRows[0]['vw']) : 0;
             
-            rows[i]['balance'] = rows[i]['share'] * rows[i]['current_price']-rows[i]['share'] * rows[i]['avg_cost'];
+            const share = parseFloat(rows[i]['share']) || 0;
+            const avgCost = parseFloat(rows[i]['avg_cost']) || 0;
+            const currentPrice = parseFloat(rows[i]['current_price']) || 0;
+            
+            rows[i]["value"] = share * currentPrice;
+            rows[i]['balance'] = share * (currentPrice - avgCost);  // 改为 balance
         }
         console.log(rows);
         if (rows.length > 0) {
