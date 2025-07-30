@@ -3,15 +3,16 @@ var pool = require('../config/db');
 
 const updateCash = async (cash, code) => {
     var query = 'SELECT * FROM cash WHERE id = 1';
+    var newCash = 0;
     try {
         const [rows] = await pool.query(query);
         if (code == 0) {   
-            var newCash = rows[0]['cash'] + cash;
+            newCash = rows[0]['cash'] + cash;
         } else if (code == 1) {
             if (rows[0]['cash'] < cash) {
                 throw new Error('Not enough cash to withdraw');
             }
-            var newCash = rows[0]['cash'] - cash;
+            newCash = rows[0]['cash'] - cash;
         } else {
             throw new Error('Invalid code');
         }
