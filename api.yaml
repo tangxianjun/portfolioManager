@@ -1,22 +1,33 @@
 openapi: 3.0.0
 info:
-  title: Worker Stock Holdings API
+  title: Stock Portfolio API
+  description: API for stock market data and portfolio management
   version: 1.0.0
-  description: API for retrieving a worker's personal stock portfolio
   contact:
-    name: API Support
     email: support@example.com
+  license:
+    name: MIT
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://sandbox.example.com/v1
+    description: Sandbox server
 
 paths:
-  /wealth:
+  /stock/{ticker}:
     get:
-      summary: Retrieve worker's stock holdings
-      description: Returns a list of stocks held by an individual worker
-      operationId: getWorkerStockHoldings
       tags:
-        - Worker Portfolio
-      security:
-        - BearerAuth: []
+        - Market Data
+      summary: Get stock data by ticker symbol
+      description: Returns historical stock data for the given ticker symbol
+      parameters:
+        - name: ticker
+          in: path
+          description: Stock ticker symbol (e.g., AAPL, MSFT)
+          required: true
+          schema:
+            type: string
+            example: AAPL
       responses:
         '200':
           description: Successful operation
@@ -25,78 +36,287 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  required:
-                    - id
-                    - code
-                    - share
-                    - avg_cost
-                    - name
-                    - time
-                  properties:
-                    id:
-                      type: integer
-                      description: Unique holding ID
-                      example: 78901
-                    code:
-                      type: string
-                      description: Stock ticker symbol
-                      example: "AAPL"
-                      minLength: 2
-                      maxLength: 6
-                    share:
-                      type: number
-                      format: float
-                      description: Number of shares held by the worker
-                      example: 150.5
-                    avg_cost:
-                      type: number
-                      format: float
-                      description: Worker's average purchase price per share
-                      example: 145.67
-                    url:
-                      type: string
-                      format: uri
-                      description: URL of the company's logo
-                      example: "https://example.com/logos/apple.png"
-                    sector:
-                      type: string
-                      description: Industry sector of the company
-                      example: "Technology"
-                    name:
-                      type: string
-                      description: Company name
-                      example: "Apple Inc."
-                    time:
-                      type: integer
-                      description: Timestamp of last portfolio update (milliseconds)
-                      example: 1722297600000
-        '401':
-          description: Unauthorized - missing or invalid authentication
-        '403':
-          description: Forbidden - authenticated user doesn't have access
+                  $ref: '#/components/schemas/StockData'
         '404':
-          description: No holdings found for this worker
+          description: Ticker not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Invalid ticker format
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /wealth:
+    get:
+      tags:
+        - Portfolio
+      summary: Get wealth portfolio data
+      description: Returns current portfolio holdings with valuation information
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PortfolioItem'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
-          description: Internal server error
-      parameters:
-        - name: showDetails
-          in: query
-          description: Return additional holding details
-          required: false
-          schema:
-            type: boolean
-          example: true
-        - name: currency
-          in: query
-          description: Currency for value calculations
-          required: false
-          schema:
-            type: string
-            enum: [USD, EUR, CNY, JPY]
-          example: USD
+          $ref: '#/components/responses/ServerError'
+
+  /cash:
+    get:
+      tags:
+        - Account
+      summary: Get user's available cash
+      description: Returns the current cash balance in the user's account
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashBalance'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /addCash:
+    post:
+      tags:
+        - Account
+      summary: Add cash to user's account
+      description: Increases the user's available cash balance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCashRequest'
+      responses:
+        '200':
+          description: Cash updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessage'
+        '400':
+          description: Invalid amount
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /transaction:
+    post:
+      tags:
+        - Trading
+      summary: Execute stock transaction
+      description: Buy or sell stocks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '200':
+          description: Transaction successful
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/SuccessMessage'
+                  - $ref: '#/components/schemas/TransactionError'
+        '400':
+          description: Invalid transaction request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Insufficient funds or shares
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionError'
 
 components:
+  schemas:
+    StockData:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 19
+        ticker:
+          type: string
+          example: AAPL
+        v:
+          type: string
+          description: Closing price
+          example: "213.880000"
+        vw:
+          type: string
+          description: Volume weighted average price
+          example: "214.128400"
+        o:
+          type: string
+          description: Opening price
+          example: "214.700000"
+        c:
+          type: string
+          description: Closing price
+          example: "213.880000"
+        h:
+          type: string
+          description: Highest price
+          example: "215.240000"
+        l:
+          type: string
+          description: Lowest price
+          example: "213.400000"
+        t:
+          type: string
+          format: date-time
+          description: Timestamp of the data
+          example: "2025-07-25T04:00:00.000Z"
+        n:
+          type: integer
+          description: Number of transactions
+          example: 409972
+
+    PortfolioItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        code:
+          type: string
+          example: "AAPL"
+        share:
+          type: integer
+          example: 36
+        avg_cost:
+          type: string
+          example: "214.128400"
+        time:
+          type: string
+          format: date-time
+          example: "2025-07-29T03:49:14.000Z"
+        url:
+          type: string
+          format: uri
+          example: "https://logo.clearbit.com/apple.com"
+        sector:
+          type: string
+          example: "Technology"
+        name:
+          type: string
+          example: "Apple Inc."
+        current_price:
+          type: string
+          example: "214.128400"
+        value:
+          type: string
+          example: "7708.6224"
+        balance:
+          type: number
+          example: 0
+
+    CashBalance:
+      type: object
+      properties:
+        cash:
+          type: string
+          example: "0"
+
+    AddCashRequest:
+      type: object
+      required:
+        - cash
+      properties:
+        cash:
+          type: number
+          minimum: 0.01
+          example: 1000
+
+    TransactionRequest:
+      type: object
+      required:
+        - type
+        - code
+        - share
+      properties:
+        type:
+          type: integer
+          enum: [0, 1]
+          description: |
+            0 - Buy
+            1 - Sell
+          example: 0
+        code:
+          type: string
+          example: "AAPL"
+        share:
+          type: number
+          minimum: 1
+          example: 10
+
+    SuccessMessage:
+      type: array
+      items:
+        type: object
+        properties:
+          message:
+            type: string
+            example: "success"
+
+    TransactionError:
+      type: array
+      items:
+        type: string
+        example: "Not enough shares to sell"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Error message description"
+
+  responses:
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Authentication required"
+
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal server error"
+
   securitySchemes:
     BearerAuth:
       type: http
